@@ -6,6 +6,7 @@ package org.gxf.crestdeviceservice.coap
 
 import org.assertj.core.api.Assertions
 import org.gxf.crestdeviceservice.psk.entity.PreSharedKey
+import org.gxf.crestdeviceservice.psk.entity.PreSharedKeyStatus
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.time.Instant
@@ -20,7 +21,8 @@ class PskCommandCreatorTest {
             "6543210987654321,64904d94590a354cecd8e65630289bcc22103c07b08c009b0b12a8ef0d58af9d,different-secret"
     )
     fun shouldCreateACorrectPskCommandoWithHash(key: String, expectedHash: String, usedSecret: String) {
-        val preSharedKey = PreSharedKey("identity", 0, Instant.now(), key, usedSecret)
+        val preSharedKey =
+            PreSharedKey("identity", 0, Instant.now(), key, usedSecret, PreSharedKeyStatus.PENDING)
 
         val result = PskCommandCreator.createPskSetCommand(preSharedKey)
 

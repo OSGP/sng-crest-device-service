@@ -54,7 +54,6 @@ class MessageHandlingTest {
 
         assertThat(records.records(kafkaProducerProperties.topicName)).hasSize(1)
 
-
         val expectedJsonNode = ObjectMapper().readTree(getFileContentAsString("message.json"))
         val payloadJsonNode = ObjectMapper().readTree(records.records(kafkaProducerProperties.topicName).first().value().payload)
 

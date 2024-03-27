@@ -7,6 +7,7 @@ package org.gxf.crestdeviceservice
 import org.assertj.core.api.Assertions.assertThat
 import org.gxf.crestdeviceservice.IntegrationTestHelper.getFileContentAsString
 import org.gxf.crestdeviceservice.psk.entity.PreSharedKey
+import org.gxf.crestdeviceservice.psk.entity.PreSharedKeyStatus
 import org.gxf.crestdeviceservice.psk.entity.PskRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -31,7 +32,8 @@ class CoapMessageHandlingTest {
 
     companion object {
         private const val IDENTITY = "1234"
-        private const val PRE_SHARED_KEY = "1234567890123456"
+        private const val PRE_SHARED_KEY_FIRST = "1234567890123456"
+        private const val PRE_SHARED_KEY_NEW = "2345678901234567"
         private const val SECRET = "123456789"
     }
 
@@ -43,7 +45,16 @@ class CoapMessageHandlingTest {
 
     @BeforeEach
     fun setup() {
-        pskRepository.save(PreSharedKey(IDENTITY, 0, Instant.MIN, PRE_SHARED_KEY, SECRET))
+        pskRepository.save(
+            PreSharedKey(
+                IDENTITY,
+                0,
+                Instant.MIN,
+                PRE_SHARED_KEY_FIRST,
+                SECRET,
+                PreSharedKeyStatus.ACTIVE
+            )
+        )
     }
 
     @AfterEach
@@ -53,6 +64,17 @@ class CoapMessageHandlingTest {
 
     @Test
     fun shouldReturnADownLinkContainingAPskSetCommandWhenTheKeyHasNotChangedYet() {
+        pskRepository.save(
+            PreSharedKey(
+                IDENTITY,
+                1,
+                Instant.now(),
+                PRE_SHARED_KEY_NEW,
+                SECRET,
+                PreSharedKeyStatus.READY
+            )
+        )
+
         val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
         val request = HttpEntity<String>(getFileContentAsString("message.json"), headers)
 
@@ -62,15 +84,59 @@ class CoapMessageHandlingTest {
     }
 
     @Test
-    fun shouldNotReturnADownLinkContainingAPskSetCommandWhenTheKeyHasNotChangedYet() {
-        // Set second PreSharedKey for device
-        pskRepository.save(PreSharedKey(IDENTITY,1, Instant.now(), PRE_SHARED_KEY, SECRET))
+    fun shouldChangeActiveKeyWhenTheKeyIsPendingAndSuccessURCReceived() {
+        // pending psk, waiting for URC in next message from device
+        pskRepository.save(
+            PreSharedKey(
+                IDENTITY,
+                1,
+                Instant.now(),
+                PRE_SHARED_KEY_NEW,
+                SECRET,
+                PreSharedKeyStatus.PENDING
+            )
+        )
 
         val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
-        val request = HttpEntity<String>(getFileContentAsString("message.json"), headers)
+        val request =
+            HttpEntity<String>(getFileContentAsString("message_psk_set_success.json"), headers)
+
+        val result = restTemplate.postForEntity<String>("/sng/${IDENTITY}", request)
+
+        val oldKey = pskRepository.findFirstByIdentityOrderByRevisionAsc(IDENTITY)!!
+        val newKey = pskRepository.findFirstByIdentityOrderByRevisionDesc(IDENTITY)!!
+
+        assertThat(result.body).isEqualTo("0")
+        assertThat(oldKey.status).isEqualTo(PreSharedKeyStatus.INACTIVE)
+        assertThat(newKey.status).isEqualTo(PreSharedKeyStatus.ACTIVE)
+    }
+
+    @Test
+    fun shouldSetPendingKeyAsInvalidWhenFailureURCReceived() {
+        // pending psk, waiting for URC in next message from device
+        pskRepository.save(
+            PreSharedKey(
+                IDENTITY,
+                1,
+                Instant.MIN,
+                PRE_SHARED_KEY_NEW,
+                SECRET,
+                PreSharedKeyStatus.PENDING
+            )
+        )
+
+        val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
+        val request =
+            HttpEntity<String>(getFileContentAsString("message_psk_set_failure.json"), headers)
 
         val result = restTemplate.postForEntity<String>("/sng/${IDENTITY}", request)
 
         assertThat(result.body).isEqualTo("0")
+        val oldKey = pskRepository.findFirstByIdentityOrderByRevisionAsc(IDENTITY)!!
+        val newKey = pskRepository.findFirstByIdentityOrderByRevisionDesc(IDENTITY)!!
+
+        assertThat(result.body).isEqualTo("0")
+        assertThat(oldKey.status).isEqualTo(PreSharedKeyStatus.ACTIVE)
+        assertThat(newKey.status).isEqualTo(PreSharedKeyStatus.INVALID)
     }
 }

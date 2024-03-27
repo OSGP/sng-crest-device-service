@@ -30,7 +30,7 @@ class MessageController(private val messageService: MessageService, private val 
         logger.debug { "Processed message" }
 
         synchronized(lock(identity)) {
-            return ResponseEntity.ok(downlinkService.getDownlinkForIdentity(identity))
+            return ResponseEntity.ok(downlinkService.getDownlinkForIdentity(identity, body))
         }
     }
 

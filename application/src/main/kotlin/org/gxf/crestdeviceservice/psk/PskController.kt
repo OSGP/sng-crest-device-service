@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package org.gxf.crestdeviceservice.psk
 
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -16,7 +20,7 @@ class PskController(private val pskService: PskService, private val metricServic
 
     @GetMapping
     fun getPsk(@RequestHeader("x-device-identity") identity: String): ResponseEntity<String> {
-        val currentPsk = pskService.getCurrentPsk(identity)
+        val currentPsk = pskService.getCurrentActiveKey(identity)
 
         if (currentPsk == null) {
             logger.error { "No psk found for device $identity" }

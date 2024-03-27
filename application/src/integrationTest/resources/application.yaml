@@ -1,3 +1,6 @@
+#SPDX-FileCopyrightText: Contributors to the GXF project
+#
+#SPDX-License-Identifier: Apache-2.0
 spring:
   flyway:
     enabled: false
@@ -30,36 +33,17 @@ crest-device-service:
       topic-name: "crest-message"
   psk:
     decryption:
-      method: "RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING"
+      method: "RSA"
       private-key:
         1: |-
           -----BEGIN PRIVATE KEY-----
           MIIJQQIBADANBgkqhkiG9w0BAQEFAASCCSswggknAgEAAoICAQCNHqJp9izMQQQu0hL+yy/U4VjUy82Om0FNd16yUfIjgvITIF6WavffpR9RZRoDxE2h7lJAVu1kIQqUtDOPlLMzUDDYkd2gLhnG+wROoJLFuyhg5lI1iVVfBH/5gTHlRckmvELylvG03pD9sUqcfbSTVl/uWhH/LkwezP39AadDjhor4EpolZShGqzNlToA3aw2v+a9HsqD7MbbHd2DVfjpc4V9U51HILXIE71xY5lIqJCUYUu/uuRXLVFpMG33Jaj1ySe6UDvUPD/OxuzRDlEziiKbinOtkRE1ot/Oq95a3IRXsEPZ/+CANuJKfgUbLnEn2MAkku+MaBbAvwPYp8HP7+A7GlwR5mI9ivT/50nwMYcYWosCZn40phY0U5fhWWR6srH2d52mbW2BAsyGB1imbc2heIzKkNP/Xc/+T2uO62wlnPpgHs0E4LnA2kelrU3QxC0ErZbAj694byVaHZpplCxYpOrammShTYtli/g3UK3ZyDuUwhesAltFVga97xJoQySLN7arw9haHYW7Y1mRchQ/pBMd1bjeDOjViecN9hHCURLtFEJEDBW92sJIwqZPFjFlMaftGe2LNa83mW34/FNsxqXShUDmg6wlBQDwgkJWvTRcSsh2ofitcGW5xEdWm1EMWyc30nd9ddh3GQVIR2CYe10JfYwbkc/PwfubPQIDAQABAoICABsUZdYvhykq0MKrTTnXg7Y2B/XNpgRXhpB295UAZJar6ggBjiUPIcGozfmwjO1sHfmU4fO2upccQAuJCNvkjP6rxLPKSd0S+59TS+BKr9+Bqp3tlJjxYZB6LJSUVh7I5XCpb69dh8RNcUU9YDPna19ak84JOqrdF35Rl+uVBaPRAPSqdZzcF0lS9RX+LMM9xm47JOvlnLb0GLSzZm5tcPZbVKJYCTY88KUUJKY9lox6zEOs5/xCwM55w8WLpY5ni6SelSELhG+VoCjtw0Pam3poZ3uxdcE4tTS1rHzcPi7xYfPxvxN2Jn50CbiBtjkhEFW1IiniiFVJJBSYkwRgLLCRN1jfOqzBBcHVlnE1oh4HpeYqRFTUJDVcS0gC2YJxCT44tdYAuWjR2+0oB0Rjlk5ExF4TVWumK1DGQC1ENTh4Ms83UCGVy8lS01dXmVurVMAweW1BUpktfHoXTut8OKxWpgHHVZRYg/68utA6mLeP0vqD19sLElrHU81/O792sBaiaz4xyhgLkNAMk/llqTEU4sN6p8RgOCa3cJqBxzo4ytVLU529B7qzFJk6f63IY9I7ELnpuDEfoUxW68X9aFh3/Xyags+wAYJoiK/YlBYO2q4EznutbqLGSLIgRTUMVT9UMctFdxvkTm52aDsgb6z2FH93kqxPstwgOsDTfb+BAoIBAQDFdwVX5mpWaOWg44gwhV7XCv7Kn4vpFOF4C96fXx+GOITEVG02OrY+IhM8ci9OvdT1lgCUl6XN1r+7L3rVaTva4CdxijNYLq0FSRAbhoYHBzV/QiParregtXZrIKLQQVrUTTvnPJ4f7t125Yq8QIL/N3X0odXpuL8/EE5wNIkPAwPdOvbtTZg+tyuFS4r7GsVh9YNIVWcvf9Bvs9We/Fr1gh9vYRvmHst9z7o7yzL6eTAoW12/QhVhZgCb1aW/bMKy52TjlYUTZlsSKty38sBTiOtza+y808t7SUR3vuEEzZw1hnkVHWB9opzYLQIgsG7DuLIJ09DKWWlB1rN4Tjr7AoIBAQC288CzFFoiKX0jjHGbBAEyBJzQ2Jc2jPVeOxojlH8q32+z+4bXi8g4UU+63QRsf79UqZDGP2yBYb+adxP/fs81cm/1YqPcfnFKPvohbVouFYRdJjOokYK+VQyvzfEMxlGIIQ7KO62I8lxATk2sXCOIneozojyBdkGSyt3BzlMdoGIRMTiA9ZQOZQROiYnHTAN4l2ZtGZSdLIkQB7ASnepe6T4dcSTfNToghudNr0M3NQwPpgzFaI2gtD6Lrf0lRndrf84TR3bAUq3DWwFFz1sdcnruqIHgeTlhuqNqK/MZKLeZjgGJvEwGdBaVZBjyP7tuyAgSD/trj5sf9Id6j60nAoIBAE63JHUmz+sEQ82ABlE5SVY19t20/iP7A+pD6Qnk9H8f1qUg9qwweWeJU9u7tOoRuGvx0OdrEFheq+2lfrTGD2swAek76z3S1XwO5RHj7Vet4wCI0Bwjm+W/kKYhy2VzOA77fs6uFmaqZLQ5yrVCjjXI2Qec39YcpHgyOuJ1vtEyJX8yOy7byL3vbLTlKVDyGg7zvNK/4LNJo0B0Esse0++cYIWY03NHgVz0yst9NCQu3SipS1SrtjQuYj28zCbj5zVEEq66cuMJ4XH7jiLx7QMfyKQpOKUJVMsfqOCHQdIVWJjpsyjcnhNXGGkAgCGh03XIEYjjXA7d15y8RqzFmrMCggEAFmTj04fMOJ5HeRB533WwB8VUxKOebsj2R+CIJI7Kuh67d5Z0PPIZQfuB/OeM4RMKAnz3Aa1FxNiIMYod4opNJsepOKooUJcRmvr2dx0Bit6LYzOH4zxcepvCf8p/lQa5eCZDvzFq3nZ8IEr1awGkP9bEkilrqpUlFajLWCu/NMMq/du+hNqKkvB+hHaFbOW7DwnJOdWFwW9wH4wxWzYFODToq4Xr8356bPzWV0X6vkk5/rhem9NecqtddI+JiwSDHZ95RBbdTFFSf7UmBLuK9aHLtmbd7vInufS0iAx1J0E6qAsf2RI5ZBjVoterzgtLEBZgFoXqSpI7dL/jzXbExQKCAQBhfBBkTLqvyA84ylDLtkEJzEITHS+LJPsieKFLpvPQsV2IaZ9nLtxQhYdVOZmvVbOLJGugh2Y8AG8EeMm5bqoa/JObdChmt+GDnlDj2rla8dPdw/JHWlOq5xzsaXSWMGIykqURzM52wkZp3sOEe30RPrfo69Kn2sUzex4YmnnWZCQz5CHot7AqVS+e0jsYdvIp1JsRkJGYp+eecUBRa/+FmjyBGwONJ5GafXn6r9iDrsBoMOmYhzsSf4mVyR6htOZsbY2UKnmsNb2FxssgnHRXYiQtTuWuFIgz1EjTmBoKvDoQCb+A30jtaiaZhMRUzx8+kOP1o62YiVisrEwj1wpG
           -----END PRIVATE KEY-----
-      public-key:
-        1: |-
-          -----BEGIN PUBLIC KEY-----
-          MIICIjANBgkqhkiG9w0BAQEFAAOCAg8A
-          MIICCgKCAgEAjR6iafYszEEELtIS/ssv
-          1OFY1MvNjptBTXdeslHyI4LyEyBelmr3
-          36UfUWUaA8RNoe5SQFbtZCEKlLQzj5Sz
-          M1Aw2JHdoC4ZxvsETqCSxbsoYOZSNYlV
-          XwR/+YEx5UXJJrxC8pbxtN6Q/bFKnH20
-          k1Zf7loR/y5MHsz9/QGnQ44aK+BKaJWU
-          oRqszZU6AN2sNr/mvR7Kg+zG2x3dg1X4
-          6XOFfVOdRyC1yBO9cWOZSKiQlGFLv7rk
-          Vy1RaTBt9yWo9cknulA71Dw/zsbs0Q5R
-          M4oim4pzrZERNaLfzqveWtyEV7BD2f/g
-          gDbiSn4FGy5xJ9jAJJLvjGgWwL8D2KfB
-          z+/gOxpcEeZiPYr0/+dJ8DGHGFqLAmZ+
-          NKYWNFOX4VlkerKx9nedpm1tgQLMhgdY
-          pm3NoXiMypDT/13P/k9rjutsJZz6YB7N
-          BOC5wNpHpa1N0MQtBK2WwI+veG8lWh2a
-          aZQsWKTq2ppkoU2LZYv4N1Ct2cg7lMIX
-          rAJbRVYGve8SaEMkize2q8PYWh2Fu2NZ
-          kXIUP6QTHdW43gzo1YnnDfYRwlES7RRC
-          RAwVvdrCSMKmTxYxZTGn7RntizWvN5lt
-          +PxTbMal0oVA5oOsJQUA8IJCVr00XErI
-          dqH4rXBlucRHVptRDFsnN9J3fXXYdxkF
-          SEdgmHtdCX2MG5HPz8H7mz0CAwEAAQ==
-          -----END PUBLIC KEY-----
+
+logging:
+  level:
+    com:
+      alliander: info
+    org:
+      gxf: info
+    root: warn

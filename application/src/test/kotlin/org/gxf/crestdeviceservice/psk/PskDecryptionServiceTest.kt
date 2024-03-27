@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.psk
 
 import org.assertj.core.api.Assertions.assertThat
@@ -9,7 +12,7 @@ import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.PublicKey
 import java.security.interfaces.RSAPrivateKey
-import java.util.*
+import java.util.Base64
 import javax.crypto.Cipher
 
 class PskDecryptionServiceTest {

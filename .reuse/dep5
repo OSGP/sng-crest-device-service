@@ -1,0 +1,36 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: sng-crest-device-service
+Upstream-Contact: IoTFDP Support <IoTFDPSupport@alliander.com>
+Source: https://github.com/OSGP/sng-crest-device-service/
+
+Files: application/src/integrationTest/resources/*.json
+Copyright: Contributors to the GXF project
+License: Apache-2.0
+
+Files: application/src/main/resources/db/*
+Copyright: Contributors to the GXF project
+License: Apache-2.0
+
+Files: application/src/main/resources/*.json
+Copyright: Contributors to the GXF project
+License: Apache-2.0
+
+Files: application/src/main/avro/*
+Copyright: Contributors to the GXF project
+License: Apache-2.0
+
+Files: application/src/test/resources/messages/*
+Copyright: Contributors to the GXF project
+License: Apache-2.0
+
+Files: gradle/*
+Copyright: Contributors to the GXF project
+License: Apache-2.0
+
+Files: *.json
+Copyright: Contributors to the GXF project
+License: Apache-2.0
+
+Files: gradlew*
+Copyright: Contributors to the GXF project
+License: Apache-2.0
