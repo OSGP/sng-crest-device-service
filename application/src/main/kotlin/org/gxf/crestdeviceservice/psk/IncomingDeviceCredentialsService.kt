@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.psk
 
 import com.alliander.sng.DeviceCredentials
@@ -11,23 +14,29 @@ class IncomingDeviceCredentialsService(
     private val pskDecryptionService: PskDecryptionService
 ) {
 
-    private val logger = KotlinLogging.logger { }
+    private val logger = KotlinLogging.logger {}
 
     @KafkaListener(
         topics = ["\${crest-device-service.kafka.pre-shared-key-consumer.topic-name}"],
-        id = "\${crest-device-service.kafka.pre-shared-key-consumer.id}"
-    )
+        id = "\${crest-device-service.kafka.pre-shared-key-consumer.id}")
     fun handleIncomingDeviceCredentials(deviceCredentials: DeviceCredentials) {
         logger.info { "Received key for ${deviceCredentials.imei}" }
 
-        try {
-            val decryptedPsk = pskDecryptionService.decryptSecret(deviceCredentials.psk, deviceCredentials.keyRef)
-            val decryptedSecret = pskDecryptionService.decryptSecret(deviceCredentials.secret, deviceCredentials.keyRef)
+        val identity = deviceCredentials.imei
 
-            pskService.setInitialKeyForIdentify(deviceCredentials.imei, decryptedPsk, decryptedSecret)
+        try {
+            val decryptedPsk =
+                pskDecryptionService.decryptSecret(deviceCredentials.psk, deviceCredentials.keyRef)
+            val decryptedSecret =
+                pskDecryptionService.decryptSecret(
+                    deviceCredentials.secret, deviceCredentials.keyRef)
+
+            pskService.setInitialKeyForIdentity(identity, decryptedPsk, decryptedSecret)
+
+            logger.info { "Creating new ready key for device $deviceCredentials.imei" }
+            pskService.generateNewReadyKeyForIdentity(identity)
         } catch (e: Exception) {
-            logger.error(e) { "Failed to set device credentials for ${deviceCredentials.imei}" }
+            logger.error(e) { "Failed to set device credentials for $identity" }
         }
     }
-
 }

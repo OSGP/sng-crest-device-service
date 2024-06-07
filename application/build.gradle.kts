@@ -29,11 +29,10 @@ dependencies {
     implementation("org.springframework:spring-aspects")
 
     implementation("org.springframework.kafka:spring-kafka")
-    implementation(libs.microsoftMsal)
 
     implementation(libs.commonsCodec)
 
-    api(libs.avro)
+    implementation(libs.avro)
 
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
@@ -65,6 +64,7 @@ testing {
                 implementation(project())
                 implementation("org.springframework.boot:spring-boot-starter-data-jpa")
                 implementation(libs.kafkaAvro)
+                implementation(libs.avro)
                 implementation("org.springframework.kafka:spring-kafka")
                 implementation("org.springframework.boot:spring-boot-starter-test")
                 implementation("org.springframework.kafka:spring-kafka-test")

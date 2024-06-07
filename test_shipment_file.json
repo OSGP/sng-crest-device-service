@@ -1,0 +1,41 @@
+{
+  "shipment": {
+    "version": "1",
+    "shipmentNumber": "12345",
+    "shipmentDate": "2024-01-15T10:55:00Z",
+    "supplier": "Crest",
+    "purchaseOrder": "PO12345"
+  },
+  "devices": [
+    {
+      "rtu": {
+        "rtuId": "867787050253370",
+        "manufacturer": "CREST",
+        "type": "GW1042M-X-QFX-DC24",
+        "productionDate": "2022-04-26",
+        "serialNumber": "00E0C81732FC",
+        "hardwareRevision": "hw12345",
+        "firmwareVersion": "83.1",
+        "pskEncrypted": "epzb8Hpdf+VuBmLWRHzX583X5F7n0aelhkKedAMP1FkfkWUDHew6XzR1Bxcfvb+E5i4RQ+PHJeS4uNDjgxpgggzifzbWcA+t3tAWhF7dYjjk/d+gR7Un4aTODKTRig+VP3tS1FrD6UJOufL9pFbzKqz7qDFjBYc1zXtuNYBHh9Q0Ff82zXhYP3Pl0wx5hYjbC1Z7bmepzirDmr2LZmMhC2kGF4io+m3fKrFpZcm6aWPMnTVhwIJFFhrgP3/qA/OsvWyHF+5Kv4qyWe1BlAwW2CeYPm4FaDw7z8X/xEQpcV7VFRdnkyzjvtuJyS8cgRgwOUwfR6Cg5SIrNQf3c0ITglfV7IKzdh6lF2ADebbzozcrg+4AmLcSmm/KXo9xJP+NzJqmhgpys7cLrmxp0HmkQx2BvHI0y65V0AngY6QTpxQiWkNbgr++j61lgLvNXzKLk7Ncvq20CDC0ogO2ywEpr5ren9nQedNQyiacbfCwu7pFT7zWTyqINwwH5NQDH+/8VdI4V1mRiwh6tMl0WEv7eMFO3hFmMobIGjfVKpFeb6zTb9cL9O18MODuMKHBE3Hm/cTNfqQuCFHeeORAajTNiIomOriP+bb51fZRqxCzbFOPVCJDX7B/UR+TgVYiZqmF5kYpsYgcPUWozIJ76u0/CRpbmzWqhQupkp+8rm8CBNI=",
+        "pskChangeSecretEncrypted": "snJ48Okf74oVJmRPHfHO0sp0VeIFPBvvRKArMzEprPmht3rFWHH99RVuUxCi5PQJaxDCM210aJGhtZHtgKGE47hwwP5ZpX29ooI2ujjzLXnY4Oh07V7IG6gqC54vbgCKykW2YpoFgxDYvSYzNZ6yHlwz/MU8h4IHGfoBGU2dn/+q52HyyWVwX8uS+nMjNVmdCjooYsSXHaM2LyOMdXEZeW1tzxrPCcIamzPAgo5KOyFcPBozDMMpalc5OOhOgdOeuJRZz2y0Shj0JqFN4/85BDLmG12HDSj9eDEd+eSPS9gsyA5NBqcW6/w2ZGxZ3+l50S6bQpKCTUSzyNyO5rToCFs+xr/peWkrhYrZJS6l00uitzEx8JpNvPYPBq9mp+A1Vxp/fwgTVqJKxqFl7SjllbIJKb4+kkPfH6z58J/mFhTecRfTOZYdC7314GzyM86CSGh7l3ccf1L56hFSLq8vItV2by7HpJ279iyBhP/J1e+gJVH+kcsg4xHF6qCEfIbJtJ71O/0dxJLD/gYpqR7vs1XDOi4YUX++fe0qLtUQK2czg6mCOZIVnuhaHbb/Xhb8HwoK8soUQFPBIlfeH+MxHgJzsemitL0nxnnNLQPmyw5JNUl4x7LTRTgX1bQDSPpxb3Wsx+GMGzmcbbo9nK7dzvwDe5vUsnqWfCDsntJ38q4=",
+        "pskEncryptionKeyRef": "1"
+      },
+      "telecomRouter": {
+        "routerId": "869777040008792",
+        "imei": "869777040008792",
+        "serialNumber": "00E0C81732FC",
+        "firmwareVersion": "CPX-25.01.40.028"
+      },
+      "sim": {
+        "simId": "8931080119093818390",
+        "iccId": "8931080119093818390",
+        "imsi": "204080816515118",
+        "msisdn": "3197025168557",
+        "eid": "89033023312170000000005421143542",
+        "user": "SIM0000000000001",
+        "passwordEncrypted": "LZuef9DeRkJvg1UzUNX3rBlNnpjisfY738FERtb1KKcCOjcJZNp72LvU5c5W6bZqSu4m2V7vhp8cWWyRQrDDV4NQ7NZF/a9OeK1srDEfz8U2wAEX1K1uGckPMoN1NyDj3hFQkoCcTbRUxmCwG9gJZoM/ZsI7Qf1Gcq8NJbUzjo7KXAaEfaX2Y42nHipS9yV5b4LMpcQ1mMl9hdPcP7goKewjkydcobJztwCYtcmfT7AvaK6seDfH58qZv/HCQauRWPPIUiBgkH/5/80mMU2LTPRgdkMD7ORk48J/fxYJAeAuJAFLZ6YoMkVOet7dhR9nzIluTNtRod4f8g8K0syUQ9YW7/mBmEbRAH71saAd5I6CaTRwohyC6x6DyYB90kj45KfxvnNqSv1t/y8hXOF8qk8DHrZ4fE5B3N7frw8ymof0A5741fsURa/p5mIwkIxO5ckQQtBEpNqQlpIugPmLVVhAiyrfZ/xqRqUHsKsKUTmpuprgHqZJsbDLvjQO+vuqLpiHUprG6bWmrKvBbmeYifG2er42Xsj5pbEwsF+XQIMX9APC8yDCT72imZXmqc3Eba7MsvQK1UGsN3L8B8nC17P1DhACsu8dawY16yBmjTt0QSTuKJcsqwvAbzpQrl+2ADesYVo1JBLlHG4OBmfA0t+YIU28/NTbCTefbfzxd/Q=",
+        "passwordEncryptionKeyRef": "1"
+      }
+    }
+  ]
+}

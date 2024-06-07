@@ -1,11 +1,13 @@
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.psk
 
+import java.util.*
+import javax.crypto.Cipher
 import org.gxf.crestdeviceservice.psk.configuration.PskDecryptionConfiguration
 import org.gxf.crestdeviceservice.psk.exception.UnknownKeyRefException
 import org.springframework.stereotype.Service
-import java.util.*
-import javax.crypto.Cipher
-
 
 @Service
 class PskDecryptionService(private val pskDecryptionConfiguration: PskDecryptionConfiguration) {
@@ -13,16 +15,16 @@ class PskDecryptionService(private val pskDecryptionConfiguration: PskDecryption
     fun decryptSecret(encryptedSecret: String, keyRef: String): String {
         val decodedSecret: ByteArray = Base64.getDecoder().decode(encryptedSecret)
 
-        return cypherForKeyRef(keyRef)
-            .doFinal(decodedSecret)
-            .decodeToString()
+        return cypherForKeyRef(keyRef).doFinal(decodedSecret).decodeToString()
     }
 
     private fun cypherForKeyRef(keyRef: String): Cipher {
-        val privateKey = pskDecryptionConfiguration.privateKey[keyRef]
-            ?: throw UnknownKeyRefException("Keyref not found in configuration")
+        val privateKey =
+            pskDecryptionConfiguration.privateKey[keyRef]
+                ?: throw UnknownKeyRefException("Keyref not found in configuration")
 
-        return Cipher.getInstance("RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING")
-            .apply { init(Cipher.DECRYPT_MODE, privateKey) }
+        return Cipher.getInstance(pskDecryptionConfiguration.method).apply {
+            init(Cipher.DECRYPT_MODE, privateKey)
+        }
     }
 }

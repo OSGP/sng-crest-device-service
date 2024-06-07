@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: Contributors to the GXF project
 //
 // SPDX-License-Identifier: Apache-2.0
-
 package org.gxf.crestdeviceservice
 
 import com.gxf.utilities.kafka.avro.AvroDeserializer
@@ -15,15 +14,14 @@ import org.springframework.util.ResourceUtils
 
 object IntegrationTestHelper {
 
-    fun createKafkaConsumer(embeddedKafkaBroker: EmbeddedKafkaBroker, topic: String): Consumer<String, DeviceMessage> {
-        val testProperties =
-                KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafkaBroker)
+    fun createKafkaConsumer(
+        embeddedKafkaBroker: EmbeddedKafkaBroker,
+        topic: String
+    ): Consumer<String, DeviceMessage> {
+        val testProperties = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafkaBroker)
         val consumerFactory =
-                DefaultKafkaConsumerFactory(
-                        testProperties,
-                        StringDeserializer(),
-                        AvroDeserializer(DeviceMessage.getDecoder())
-                )
+            DefaultKafkaConsumerFactory(
+                testProperties, StringDeserializer(), AvroDeserializer(DeviceMessage.getDecoder()))
         val consumer = consumerFactory.createConsumer()
         embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, topic)
         return consumer
@@ -32,5 +30,4 @@ object IntegrationTestHelper {
     fun getFileContentAsString(path: String): String {
         return ResourceUtils.getFile("classpath:$path").readText()
     }
-
 }

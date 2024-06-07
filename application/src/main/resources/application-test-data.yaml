@@ -1,5 +1,6 @@
 #SPDX-FileCopyrightText: Contributors to the GXF project
 #
 #SPDX-License-Identifier: Apache-2.0
-org.gradle.caching=true
-org.gradle.parallel=true
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/test-data

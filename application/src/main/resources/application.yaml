@@ -1,5 +1,16 @@
+#SPDX-FileCopyrightText: Contributors to the GXF project
+#
+#SPDX-License-Identifier: Apache-2.0
 management:
   endpoints:
     web:
       exposure:
         include: "prometheus"
+
+logging:
+  level:
+    com:
+      alliander: info
+    org:
+      gxf: info
+    root: warn

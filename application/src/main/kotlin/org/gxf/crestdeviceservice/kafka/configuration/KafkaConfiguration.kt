@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: Contributors to the GXF project
 //
 // SPDX-License-Identifier: Apache-2.0
-
 package org.gxf.crestdeviceservice.kafka.configuration
 
 import com.alliander.sng.DeviceCredentials
@@ -21,32 +20,35 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 
-
 @Configuration
-class KafkaConfiguration(private val kafkaProperties: KafkaProperties, private val sslBundles: SslBundles) {
+class KafkaConfiguration(
+    private val kafkaProperties: KafkaProperties,
+    private val sslBundles: SslBundles
+) {
 
     @Bean
-    fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, DeviceCredentials>): ConcurrentKafkaListenerContainerFactory<String, DeviceCredentials> =
-            ConcurrentKafkaListenerContainerFactory<String, DeviceCredentials>()
-                    .apply { this.consumerFactory = consumerFactory }
+    fun kafkaListenerContainerFactory(
+        consumerFactory: ConsumerFactory<String, DeviceCredentials>
+    ): ConcurrentKafkaListenerContainerFactory<String, DeviceCredentials> =
+        ConcurrentKafkaListenerContainerFactory<String, DeviceCredentials>().apply {
+            this.consumerFactory = consumerFactory
+        }
 
     @Bean
     fun consumerFactory(): ConsumerFactory<String, DeviceCredentials> =
-            DefaultKafkaConsumerFactory(
-                    kafkaProperties.buildConsumerProperties(sslBundles),
-                    StringDeserializer(),
-                    AvroDeserializer(DeviceCredentials.getDecoder())
-            )
+        DefaultKafkaConsumerFactory(
+            kafkaProperties.buildConsumerProperties(sslBundles),
+            StringDeserializer(),
+            AvroDeserializer(DeviceCredentials.getDecoder()))
 
     @Bean
     fun kafkaTemplate(producerFactory: ProducerFactory<String, DeviceMessage>) =
-            KafkaTemplate(producerFactory)
+        KafkaTemplate(producerFactory)
 
     @Bean
     fun producerFactory(): ProducerFactory<String, DeviceMessage> =
-            DefaultKafkaProducerFactory(
-                    kafkaProperties.buildProducerProperties(sslBundles),
-                    StringSerializer(),
-                    AvroSerializer(DeviceMessage.getEncoder())
-            )
+        DefaultKafkaProducerFactory(
+            kafkaProperties.buildProducerProperties(sslBundles),
+            StringSerializer(),
+            AvroSerializer(DeviceMessage.getEncoder()))
 }

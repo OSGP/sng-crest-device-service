@@ -1,3 +1,6 @@
+#SPDX-FileCopyrightText: Contributors to the GXF project
+#
+#SPDX-License-Identifier: Apache-2.0
 spring:
   datasource:
     url: "jdbc:postgresql://localhost:5432/crest_device_service"
@@ -15,22 +18,19 @@ server:
 
 crest-device-service:
   database:
-    set-initial-psk: true
+    # This key was used to encrypt the data in db/migration/test-data/V3__test_data.sql
+    # If this is changed the test data also needs to be updated.
     encryption-key: "super-secret-key"
-    #Should be the same as the PSK in the simulator only relevant for dev
-    dev-initial-psk: "ABCDEFGHIJKLMNOP"
-    dev-initial-secret: "123456"
-    #Should be the same as the identity in the simulator only relevant for dev
-    dev-device-identity: "867787050253370"
   kafka:
     pre-shared-key-consumer:
       id: "gxf-sng-crest-device-service"
       topic-name: "pre-shared-key"
     message-producer:
-      id: "gxf-sng-crest-device-service"
       topic-name: "crest-message"
   psk:
+    change-initial-psk: false
     decryption:
+      method: "RSA"
       private-key:
         1: |-
           -----BEGIN PRIVATE KEY-----

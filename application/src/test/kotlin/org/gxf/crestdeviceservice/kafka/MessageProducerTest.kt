@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Contributors to the GXF project
+//
+// SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -16,16 +19,13 @@ import org.mockito.kotlin.check
 import org.springframework.kafka.core.KafkaTemplate
 
 @ExtendWith(MockitoExtension::class)
-class MeasurementProducerTest {
+class MessageProducerTest {
 
-    @Mock
-    private lateinit var mockedKafkaTemplate: KafkaTemplate<String, DeviceMessage>
+    @Mock private lateinit var mockedKafkaTemplate: KafkaTemplate<String, DeviceMessage>
 
-    @Mock
-    private lateinit var mockedKafkaProducerProperties: KafkaProducerProperties
+    @Mock private lateinit var mockedKafkaProducerProperties: KafkaProducerProperties
 
-    @InjectMocks
-    private lateinit var measurementProducer: MeasurementProducer
+    @InjectMocks private lateinit var messageProducer: MessageProducer
 
     @BeforeEach
     fun setup() {
@@ -34,13 +34,17 @@ class MeasurementProducerTest {
 
     @Test
     fun shouldCallMessageProducerWithCorrectParams() {
-        val jsonNode = ObjectMapper().readTree("""
+        val jsonNode =
+            ObjectMapper()
+                .readTree("""
             {
                 "ID":12345
             }
         """)
-        measurementProducer.produceMessage(jsonNode)
-        verify(mockedKafkaTemplate).send(
-                check { assertThat(it).isEqualTo("topic") }, check { assertThat(it.payload).isEqualTo(jsonNode.toString()) })
+        messageProducer.produceMessage(jsonNode)
+        verify(mockedKafkaTemplate)
+            .send(
+                check { assertThat(it).isEqualTo("topic") },
+                check { assertThat(it.payload).isEqualTo(jsonNode.toString()) })
     }
 }
