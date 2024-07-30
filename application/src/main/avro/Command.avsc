@@ -1,0 +1,33 @@
+{
+  "name": "Command",
+  "namespace": "com.alliander.sng",
+  "type": "record",
+  "fields": [
+    {
+      "name": "deviceId",
+      "type": "string"
+    },
+    {
+      "name": "correlationId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "command",
+      "type": "string"
+    },
+    {
+      "name": "value",
+      "type": ["string", "null"]
+    }
+  ]
+}

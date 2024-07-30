@@ -1,0 +1,43 @@
+{
+  "name": "CommandFeedback",
+  "namespace": "com.alliander.sng",
+  "type": "record",
+  "fields": [
+    {
+      "name": "deviceId",
+      "type": "string"
+    },
+    {
+      "name": "correlationId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "timestampStatus",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "status",
+      "type": {
+        "name": "CommandStatus",
+        "type": "enum",
+        "symbols": [
+          "Received",
+          "Successful",
+          "Error",
+          "Rejected",
+          "Cancelled"
+        ]
+      }
+    },
+    {
+      "name": "message",
+      "type": ["string", "null"]
+    }
+  ]
+}

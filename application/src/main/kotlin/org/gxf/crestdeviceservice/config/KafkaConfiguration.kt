@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.config
 
+import com.alliander.sng.Command
 import com.alliander.sng.DeviceCredentials
 import com.gxf.utilities.kafka.avro.AvroDeserializer
 import com.gxf.utilities.kafka.avro.AvroSerializer
@@ -39,7 +40,7 @@ class KafkaConfiguration(
         DefaultKafkaConsumerFactory(
             kafkaProperties.buildConsumerProperties(sslBundles),
             StringDeserializer(),
-            AvroDeserializer(listOf(DeviceCredentials.getClassSchema())))
+            AvroDeserializer(listOf(DeviceCredentials.getClassSchema(), Command.getClassSchema())))
 
     @Bean
     fun kafkaTemplate(producerFactory: ProducerFactory<String, SpecificRecordBase>) =
