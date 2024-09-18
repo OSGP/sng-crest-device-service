@@ -59,7 +59,8 @@ subprojects {
     extensions.configure<SpotlessExtension> {
         kotlin {
             // by default the target is every '.kt' and '.kts' file in the java source sets
-            ktfmt().dropboxStyle()
+            diktat("2.0.0").configFile { "${project.rootDir}/diktat-analysis.yml" }
+
             licenseHeaderFile(
                 "${project.rootDir}/license-template.kt",
                 "package")
