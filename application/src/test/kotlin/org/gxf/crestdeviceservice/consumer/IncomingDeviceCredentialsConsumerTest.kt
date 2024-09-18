@@ -17,10 +17,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class IncomingDeviceCredentialsConsumerTest {
-    val pskService: PskService = mock()
-    val pskDecryptionService: PskDecryptionService = mock()
-    val commandService: CommandService = mock()
-    val incomingDeviceCredentialsConsumer = IncomingDeviceCredentialsConsumer(pskService, pskDecryptionService,
+    private val pskService: PskService = mock()
+    private val pskDecryptionService: PskDecryptionService = mock()
+    private val commandService: CommandService = mock()
+    private val incomingDeviceCredentialsConsumer = IncomingDeviceCredentialsConsumer(pskService, pskDecryptionService,
         commandService)
 
     @Test

@@ -11,22 +11,20 @@ import org.gxf.crestdeviceservice.psk.repository.PskRepository
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.KArgumentCaptor
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-@ExtendWith(MockitoExtension::class)
+typealias PskListCaptor = KArgumentCaptor<List<Psk>>
+
 class PskServiceTest {
-    @Mock private lateinit var pskRepository: PskRepository
-    @Mock private lateinit var pskConfiguration: PskConfiguration
-    @InjectMocks private lateinit var pskService: PskService
-    @Captor private lateinit var pskCaptor: ArgumentCaptor<Psk>
-    @Captor private lateinit var pskListCaptor: ArgumentCaptor<List<Psk>>
+    private val pskRepository: PskRepository = mock()
+    private val pskConfiguration: PskConfiguration = mock()
+    private val pskService = PskService(pskRepository, pskConfiguration)
+    private val pskCaptor: KArgumentCaptor<Psk> = argumentCaptor()
+    private val pskListCaptor: PskListCaptor = argumentCaptor()
 
     @Test
     fun getCurrentActiveKey() {
@@ -78,7 +76,7 @@ class PskServiceTest {
         pskService.setPendingKeyAsInvalid(deviceId)
 
         verify(pskRepository).save(pskCaptor.capture())
-        assertThat(pskCaptor.value.status).isEqualTo(PreSharedKeyStatus.INVALID)
+        assertThat(pskCaptor.firstValue.status).isEqualTo(PreSharedKeyStatus.INVALID)
     }
 
     @Test
@@ -94,7 +92,7 @@ class PskServiceTest {
         val result = pskService.setPskToPendingForDevice(deviceId)
 
         verify(pskRepository).save(pskCaptor.capture())
-        assertThat(pskCaptor.value.status).isEqualTo(PreSharedKeyStatus.PENDING)
+        assertThat(pskCaptor.firstValue.status).isEqualTo(PreSharedKeyStatus.PENDING)
         assertThat(result.status).isEqualTo(PreSharedKeyStatus.PENDING)
     }
 
@@ -115,8 +113,8 @@ class PskServiceTest {
         pskService.changeActiveKey(DEVICE_ID)
 
         verify(pskRepository).saveAll(pskListCaptor.capture())
-        val actualSavedCurrentPsk = pskListCaptor.value[0]
-        val actualSavedNewPsk = pskListCaptor.value[1]
+        val actualSavedCurrentPsk = pskListCaptor.firstValue[0]
+        val actualSavedNewPsk = pskListCaptor.firstValue[1]
         assertThat(actualSavedCurrentPsk.status).isEqualTo(PreSharedKeyStatus.INACTIVE)
         assertThat(actualSavedNewPsk.status).isEqualTo(PreSharedKeyStatus.ACTIVE)
     }

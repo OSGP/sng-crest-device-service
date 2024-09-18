@@ -19,10 +19,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class CommandConsumerTest {
-    val commandService: CommandService = mock()
-    val commandFeedbackService: CommandFeedbackService = mock()
-    val pskService: PskService = mock()
-    val commandConsumer = CommandConsumer(commandService, commandFeedbackService, pskService)
+    private val commandService: CommandService = mock()
+    private val commandFeedbackService: CommandFeedbackService = mock()
+    private val pskService: PskService = mock()
+    private val commandConsumer = CommandConsumer(commandService, commandFeedbackService, pskService)
     private val externalCommand = ExternalCommandFactory.externalRebootCommand()
     private val command = CommandFactory.pendingRebootCommand()
 

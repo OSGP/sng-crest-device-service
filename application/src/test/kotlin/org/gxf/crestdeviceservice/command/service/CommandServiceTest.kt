@@ -22,9 +22,9 @@ import java.time.Instant
 import java.util.UUID
 
 class CommandServiceTest {
-    val commandRepository: CommandRepository = mock<CommandRepository>()
-    val commandFeedbackService: CommandFeedbackService = mock<CommandFeedbackService>()
-    val commandService = CommandService(commandRepository, commandFeedbackService)
+    private val commandRepository: CommandRepository = mock()
+    private val commandFeedbackService: CommandFeedbackService = mock()
+    private val commandService = CommandService(commandRepository, commandFeedbackService)
 
     @Test
     fun validateSucceeded() {

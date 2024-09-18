@@ -11,21 +11,18 @@ import org.apache.avro.specific.SpecificRecordBase
 import org.assertj.core.api.Assertions.assertThat
 import org.gxf.sng.avro.DeviceMessage
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
 import org.mockito.Mockito.verify
-import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.check
+import org.mockito.kotlin.mock
 import org.springframework.kafka.core.KafkaTemplate
 
-@ExtendWith(MockitoExtension::class)
 class MessageProducerServiceTest {
     private val deviceMessageTopic = "device-message"
     private val kafkaProducerProperties =
         KafkaProducerProperties(
             KafkaProducerTopicProperties(deviceMessageTopic),
             KafkaProducerTopicProperties("command-feedback"))
-    @Mock private lateinit var mockedKafkaTemplate: KafkaTemplate<String, SpecificRecordBase>
+    private val mockedKafkaTemplate: KafkaTemplate<String, SpecificRecordBase> = mock()
 
     @Test
     fun shouldCallMessageProducerWithCorrectParams() {
