@@ -15,6 +15,7 @@ dependencyResolutionManagement {
             version("mockitoKotlin", "5.4.0")
             version("commonsCodec", "1.17.1")
             version("gxfUtils", "2.0")
+            version("testcontainersKafka", "1.20.1")
 
             library("logging", "io.github.oshai", "kotlin-logging-jvm").versionRef("kotlinLogging")
 
@@ -27,6 +28,8 @@ dependencyResolutionManagement {
             library("mockitoKotlin", "org.mockito.kotlin", "mockito-kotlin").versionRef("mockitoKotlin")
 
             library("commonsCodec", "commons-codec", "commons-codec").versionRef("commonsCodec")
+
+            library("testcontainersKafka", "org.testcontainers", "kafka").versionRef("testcontainersKafka")
         }
     }
 }

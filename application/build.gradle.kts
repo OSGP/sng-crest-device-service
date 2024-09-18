@@ -71,7 +71,7 @@ testing {
                 implementation("org.springframework.kafka:spring-kafka")
                 implementation("org.springframework.boot:spring-boot-starter-test")
                 implementation("org.springframework.kafka:spring-kafka-test")
-                implementation("org.testcontainers:kafka")
+                implementation(libs.testcontainersKafka)
                 implementation("org.springframework.ws:spring-ws-test")
                 implementation(libs.mockitoKotlin)
                 runtimeOnly("com.h2database:h2")
