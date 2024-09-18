@@ -20,7 +20,6 @@ import org.springframework.kafka.test.utils.KafkaTestUtils
 import org.springframework.util.ResourceUtils
 
 object IntegrationTestHelper {
-
     fun createKafkaConsumer(
         embeddedKafkaBroker: EmbeddedKafkaBroker,
         topic: String
@@ -53,17 +52,13 @@ object IntegrationTestHelper {
      *
      * @see KafkaTestUtils.producerProps
      */
-    private fun producerProps(brokers: String): Map<String, Any> {
-        return mapOf(
-            ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to brokers,
-            ProducerConfig.BATCH_SIZE_CONFIG to "16384",
-            ProducerConfig.LINGER_MS_CONFIG to 1,
-            ProducerConfig.BUFFER_MEMORY_CONFIG to "33554432",
-            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
-            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to AvroSerializer::class.java)
-    }
+    private fun producerProps(brokers: String): Map<String, Any> = mapOf(
+        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to brokers,
+        ProducerConfig.BATCH_SIZE_CONFIG to "16384",
+        ProducerConfig.LINGER_MS_CONFIG to 1,
+        ProducerConfig.BUFFER_MEMORY_CONFIG to "33554432",
+        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
+        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to AvroSerializer::class.java)
 
-    fun getFileContentAsString(path: String): String {
-        return ResourceUtils.getFile("classpath:$path").readText()
-    }
+    fun getFileContentAsString(path: String): String = ResourceUtils.getFile("classpath:$path").readText()
 }

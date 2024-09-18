@@ -3,30 +3,30 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.psk.service
 
+import org.gxf.crestdeviceservice.psk.configuration.PskDecryptionConfiguration
+import org.gxf.crestdeviceservice.psk.exception.UnknownKeyRefException
+
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Test
+
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.PublicKey
 import java.security.interfaces.RSAPrivateKey
 import java.util.Base64
 import javax.crypto.Cipher
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.gxf.crestdeviceservice.psk.configuration.PskDecryptionConfiguration
-import org.gxf.crestdeviceservice.psk.exception.UnknownKeyRefException
-import org.junit.jupiter.api.Test
 
 class PskDecryptionServiceTest {
-
     @Test
     fun decryptSecret() {
-        val keyRef = "1"
-        val secret = "12345"
-
         // Create keys and encrypt the test secret
+        val secret = "12345"
         val keyPair = generateKeyPair()
         val encryptedSecret = createSecret(secret, keyPair.public)
-
+        
         // Create the testing decryption service
+        val keyRef = "1"
         val decryptionService =
             PskDecryptionService(
                 PskDecryptionConfiguration(
@@ -41,14 +41,13 @@ class PskDecryptionServiceTest {
 
     @Test
     fun decryptSecretUnknownRef() {
-        val keyRef = "1"
-        val secret = "12345"
-
         // Create keys and encrypt the test secret
+        val secret = "12345"
         val keyPair = generateKeyPair()
         val encryptedSecret = createSecret(secret, keyPair.public)
-
+        
         // Create the testing decryption service
+        val keyRef = "1"
         val decryptionService =
             PskDecryptionService(
                 PskDecryptionConfiguration(

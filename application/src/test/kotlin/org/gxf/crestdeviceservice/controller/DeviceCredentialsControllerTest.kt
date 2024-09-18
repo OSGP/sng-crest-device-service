@@ -16,11 +16,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @WebMvcTest(PskController::class)
 class DeviceCredentialsControllerTest {
-
     @Autowired private lateinit var mvcRequest: MockMvc
-
     @MockBean private lateinit var pskService: PskService
-
     @MockBean private lateinit var metricService: MetricService
 
     @Test

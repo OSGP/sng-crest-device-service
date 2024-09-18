@@ -5,4 +5,7 @@ package org.gxf.crestdeviceservice.psk.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
+/**
+ * @property changeInitialPsk
+ */
 @ConfigurationProperties("psk") class PskConfiguration(val changeInitialPsk: Boolean = true)

@@ -4,6 +4,8 @@
 package org.gxf.crestdeviceservice.psk
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.junit.jupiter.api.Test
+
 import java.io.File
 import java.security.KeyPair
 import java.security.KeyPairGenerator
@@ -11,35 +13,33 @@ import java.security.PrivateKey
 import java.security.PublicKey
 import java.util.Base64
 import javax.crypto.Cipher
+
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createTempDirectory
-import org.junit.jupiter.api.Test
 
-class PSKKeyGenerator {
-
+class PskKeyGenerator {
     private val logger = KotlinLogging.logger {}
-    private val algorithm = "RSA"
 
     @Test
     fun generateKeyPair() {
-        val generator = KeyPairGenerator.getInstance(algorithm).apply { initialize(4096) }
+        val generator = KeyPairGenerator.getInstance(ALGORITHM).apply { initialize(KEY_SIZE) }
 
         val keyPair: KeyPair = generator.generateKeyPair()
         val privateKeyString = privateKeyToString(keyPair.private)
         val publicKeyString = publicKeyToString(keyPair.public)
 
         val cipher =
-            Cipher.getInstance(algorithm).apply { init(Cipher.ENCRYPT_MODE, keyPair.public) }
+            Cipher.getInstance(ALGORITHM).apply { init(Cipher.ENCRYPT_MODE, keyPair.public) }
         logger.info {
             "PSK: " +
-                Base64.getEncoder().encodeToString(cipher.doFinal("ABCDEFGHIJKLMNOP".toByteArray()))
+                    Base64.getEncoder().encodeToString(cipher.doFinal("ABCDEFGHIJKLMNOP".toByteArray()))
         }
         logger.info {
-            "Secret: " + Base64.getEncoder().encodeToString(cipher.doFinal("123456".toByteArray()))
+            "Secret: ${Base64.getEncoder().encodeToString(cipher.doFinal("123456".toByteArray()))}"
         }
 
-        logger.info { "Private Key:\n${privateKeyString}" }
-        logger.info { "Public Key:\n${publicKeyString}" }
+        logger.info { "Private Key:\n$privateKeyString" }
+        logger.info { "Public Key:\n$publicKeyString" }
 
         val tempDirectory = createTempDirectory()
 
@@ -71,4 +71,9 @@ class PSKKeyGenerator {
                 separator = "\n",
                 prefix = "-----BEGIN PUBLIC KEY-----\n",
                 postfix = "\n-----END PUBLIC KEY-----")
+
+    companion object {
+        private const val ALGORITHM = "RSA"
+        private const val KEY_SIZE = 4096
+    }
 }

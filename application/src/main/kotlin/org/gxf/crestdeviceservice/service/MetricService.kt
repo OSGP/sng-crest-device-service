@@ -7,13 +7,11 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.stereotype.Service
 
+/**
+ * @param meterRegistry
+ */
 @Service
 class MetricService(meterRegistry: MeterRegistry) {
-
-    companion object {
-        const val METRIC_PREFIX = "deviceservice"
-    }
-
     private val identityInvalidCounter =
         Counter.builder("$METRIC_PREFIX.psk.notfound")
             .description(
@@ -21,4 +19,8 @@ class MetricService(meterRegistry: MeterRegistry) {
             .register(meterRegistry)
 
     fun incrementIdentityInvalidCounter() = identityInvalidCounter.increment()
+
+    companion object {
+        const val METRIC_PREFIX = "deviceservice"
+    }
 }

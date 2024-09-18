@@ -21,12 +21,15 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
 
+/**
+ * @param kafkaProperties
+ * @param sslBundles
+ */
 @Configuration
 class KafkaConfiguration(
     private val kafkaProperties: KafkaProperties,
     private val sslBundles: SslBundles
 ) {
-
     @Bean
     fun kafkaListenerContainerFactory(
         consumerFactory: ConsumerFactory<String, SpecificRecordBase>

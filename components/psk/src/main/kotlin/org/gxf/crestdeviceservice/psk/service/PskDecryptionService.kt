@@ -3,15 +3,19 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.psk.service
 
-import java.util.*
-import javax.crypto.Cipher
 import org.gxf.crestdeviceservice.psk.configuration.PskDecryptionConfiguration
 import org.gxf.crestdeviceservice.psk.exception.UnknownKeyRefException
+
 import org.springframework.stereotype.Service
 
+import java.util.Base64
+import javax.crypto.Cipher
+
+/**
+ * @param pskDecryptionConfiguration
+ */
 @Service
 class PskDecryptionService(private val pskDecryptionConfiguration: PskDecryptionConfiguration) {
-
     fun decryptSecret(encryptedSecret: String, keyRef: String): String {
         val decodedSecret: ByteArray = Base64.getDecoder().decode(encryptedSecret)
 

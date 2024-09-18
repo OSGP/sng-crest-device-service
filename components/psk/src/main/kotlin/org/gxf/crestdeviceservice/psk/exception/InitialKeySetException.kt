@@ -3,4 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.psk.exception
 
+/**
+ * @param message
+ */
 class InitialKeySetException(message: String) : Exception(message)

@@ -19,12 +19,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class CommandConsumerTest {
-    private val commandService = mock<CommandService>()
-    private val commandFeedbackService = mock<CommandFeedbackService>()
-    private val pskService = mock<PskService>()
-    private val commandConsumer =
-        CommandConsumer(commandService, commandFeedbackService, pskService)
-
+    val commandService: CommandService = mock()
+    val commandFeedbackService: CommandFeedbackService = mock()
+    val pskService: PskService = mock()
+    val commandConsumer = CommandConsumer(commandService, commandFeedbackService, pskService)
     private val externalCommand = ExternalCommandFactory.externalRebootCommand()
     private val command = CommandFactory.pendingRebootCommand()
 
@@ -57,8 +55,9 @@ class CommandConsumerTest {
 
     @Test
     fun `Check if command is rejected when command is unknown`() {
-        val command = ExternalCommandFactory.externalRebootCommand()
-        command.command = "UNKNOWN"
+        val command = ExternalCommandFactory.externalRebootCommand().apply {
+            command = "UNKNOWN"
+        }
 
         commandConsumer.handleIncomingCommand(command)
 

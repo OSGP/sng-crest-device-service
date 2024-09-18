@@ -11,6 +11,15 @@ import jakarta.persistence.Id
 import java.time.Instant
 import java.util.UUID
 
+/**
+ * @property id
+ * @property deviceId
+ * @property correlationId
+ * @property timestampIssued
+ * @property type
+ * @property commandValue
+ * @property status
+ */
 @Entity
 data class Command(
     @Id @Generated val id: UUID,
@@ -21,21 +30,40 @@ data class Command(
     val commandValue: String?,
     @Enumerated(EnumType.STRING) var status: CommandStatus,
 ) {
+    /**
+     * @property downlink
+     * @property urcsSuccess
+     * @property urcsError
+     */
     enum class CommandType(
         val downlink: String,
         val urcsSuccess: List<String>,
         val urcsError: List<String>
     ) {
-        PSK("PSK", listOf("PSK:TMP"), listOf("PSK:DLER", "PSK:HSER")),
-        PSK_SET("PSK:SET", listOf("PSK:SET"), listOf("PSK:DLER", "PSK:HSER", "PSK:EQER")),
-        REBOOT("CMD:REBOOT", listOf("INIT", "WDR"), listOf())
+        PSK(
+            "PSK",
+            listOf("PSK:TMP"),
+            listOf("PSK:DLER", "PSK:HSER")
+        ),
+        PSK_SET(
+            "PSK:SET",
+            listOf("PSK:SET"),
+            listOf("PSK:DLER", "PSK:HSER", "PSK:EQER")
+        ),
+        REBOOT(
+            "CMD:REBOOT",
+            listOf("INIT", "WDR"),
+            listOf()
+        ),
+        ;
     }
 
     enum class CommandStatus {
-        PENDING,
-        IN_PROGRESS,
-        SUCCESSFUL,
+        CANCELLED,
         ERROR,
-        CANCELLED
+        IN_PROGRESS,
+        PENDING,
+        SUCCESSFUL,
+        ;
     }
 }

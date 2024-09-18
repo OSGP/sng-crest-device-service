@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class DatabaseFieldEncryptorTest {
-
     private val databaseFieldEncryptor =
         DatabaseFieldEncryptor().apply { secret = "super-secret-key" }
 

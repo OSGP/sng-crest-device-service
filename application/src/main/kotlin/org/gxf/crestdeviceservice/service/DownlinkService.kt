@@ -3,10 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.service
 
-import com.fasterxml.jackson.databind.JsonNode
-import io.github.oshai.kotlinlogging.KotlinLogging
-import jakarta.transaction.Transactional
-import org.apache.commons.codec.digest.DigestUtils
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.service.CommandService
 import org.gxf.crestdeviceservice.config.MessageProperties
@@ -14,18 +10,24 @@ import org.gxf.crestdeviceservice.model.Downlink
 import org.gxf.crestdeviceservice.psk.entity.PreSharedKey
 import org.gxf.crestdeviceservice.psk.exception.NoExistingPskException
 import org.gxf.crestdeviceservice.psk.service.PskService
+
+import com.fasterxml.jackson.databind.JsonNode
+import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.transaction.Transactional
+import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.stereotype.Service
 
+/**
+ * @param pskService
+ * @param commandService
+ * @param messageProperties
+ */
 @Service
 class DownlinkService(
     private val pskService: PskService,
     private val commandService: CommandService,
     private val messageProperties: MessageProperties
 ) {
-    companion object {
-        private const val RESPONSE_SUCCESS = "0"
-    }
-
     private val logger = KotlinLogging.logger {}
 
     @Transactional
@@ -89,7 +91,8 @@ class DownlinkService(
         if (command.type == Command.CommandType.PSK_SET) {
             val newKey = getCurrentReadyPsk(command)
             logger.debug {
-                "Create PSK set command for key for device ${newKey.identity} with revision ${newKey.revision} and status ${newKey.status}"
+                "Create PSK set command for key for device ${newKey.identity} with revision ${newKey.revision} and" +
+                        " status ${newKey.status}"
             }
             return createPskSetCommand(newKey)
         }
@@ -103,13 +106,16 @@ class DownlinkService(
 
     fun createPskCommand(newPreSharedKey: PreSharedKey): String {
         val newKey = newPreSharedKey.preSharedKey
-        val hash = DigestUtils.sha256Hex("${newPreSharedKey.secret}${newKey}")
-        return "PSK:${newKey}:${hash}"
+        val hash = DigestUtils.sha256Hex("${newPreSharedKey.secret}$newKey")
+        return "PSK:$newKey:$hash"
     }
 
     fun createPskSetCommand(newPreSharedKey: PreSharedKey): String {
         val newKey = newPreSharedKey.preSharedKey
-        val hash = DigestUtils.sha256Hex("${newPreSharedKey.secret}${newKey}")
-        return "PSK:${newKey}:${hash}:SET"
+        val hash = DigestUtils.sha256Hex("${newPreSharedKey.secret}$newKey")
+        return "PSK:$newKey:$hash:SET"
+    }
+    companion object {
+        private const val RESPONSE_SUCCESS = "0"
     }
 }

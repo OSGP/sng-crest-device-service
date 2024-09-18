@@ -3,17 +3,22 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.command.service
 
-import com.alliander.sng.Command as ExternalCommand
-import com.alliander.sng.CommandFeedback
-import com.alliander.sng.CommandStatus
-import org.apache.avro.specific.SpecificRecordBase
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.mapper.CommandFeedbackMapper
 import org.gxf.crestdeviceservice.command.mapper.CommandFeedbackMapper.commandEntityToCommandFeedback
 import org.gxf.crestdeviceservice.config.KafkaProducerProperties
+
+import com.alliander.sng.Command as ExternalCommand
+import com.alliander.sng.CommandFeedback
+import com.alliander.sng.CommandStatus
+import org.apache.avro.specific.SpecificRecordBase
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
+/**
+ * @param kafkaTemplate
+ * @param kafkaProducerProperties
+ */
 @Service
 class CommandFeedbackService(
     private val kafkaTemplate: KafkaTemplate<String, SpecificRecordBase>,

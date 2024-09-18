@@ -3,15 +3,22 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.command.service
 
-import io.github.oshai.kotlinlogging.KotlinLogging
-import java.time.Instant
-import java.util.UUID
-import kotlin.jvm.Throws
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.exception.CommandValidationException
 import org.gxf.crestdeviceservice.command.repository.CommandRepository
+
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 
+import java.time.Instant
+import java.util.UUID
+
+import kotlin.jvm.Throws
+
+/**
+ * @param commandRepository
+ * @param commandFeedbackService
+ */
 @Service
 class CommandService(
     private val commandRepository: CommandRepository,
@@ -22,15 +29,16 @@ class CommandService(
     /**
      * Validate the Command.
      *
+     * @param command
      * @throws CommandValidationException if validation fails
      */
     @Throws(CommandValidationException::class)
     fun validate(command: Command) {
-        if (deviceHasNewerSameCommand(command.deviceId, command.type, command.timestampIssued)) {
+        if (hasDeviceNewerSameCommand(command.deviceId, command.type, command.timestampIssued)) {
             throw CommandValidationException("There is a newer command of the same type")
         }
 
-        if (deviceHasSameCommandAlreadyInProgress(command.deviceId, command.type)) {
+        if (hasDeviceSameCommandAlreadyInProgress(command.deviceId, command.type)) {
             throw CommandValidationException("A command of the same type is already in progress.")
         }
     }
@@ -40,7 +48,7 @@ class CommandService(
      * later date. This check prevents issues if commands arrive out of order or if we reset the
      * kafka consumer group.
      */
-    private fun deviceHasNewerSameCommand(
+    private fun hasDeviceNewerSameCommand(
         deviceId: String,
         commandType: Command.CommandType,
         timestampNewCommand: Instant
@@ -52,7 +60,7 @@ class CommandService(
         return latestCommandInDatabase.timestampIssued.isAfter(timestampNewCommand)
     }
 
-    private fun deviceHasSameCommandAlreadyInProgress(
+    private fun hasDeviceSameCommandAlreadyInProgress(
         deviceId: String,
         commandType: Command.CommandType
     ) =
@@ -66,9 +74,10 @@ class CommandService(
             deviceId, commandType)
 
     fun cancelOlderCommandIfNecessary(pendingCommand: Command) {
-        getSameCommandForDeviceAlreadyPending(pendingCommand)?.let {
+        getSameCommandForDeviceAlreadyPending(pendingCommand)?.let { it ->
             logger.warn {
-                "Device ${it.deviceId} already has a pending command of type ${it.type}. The first command will be cancelled."
+                "Device ${it.deviceId} already has a pending command of type ${it.type}. The first command will be" +
+                        " cancelled."
             }
             cancelCommand(it, pendingCommand.correlationId)
         }

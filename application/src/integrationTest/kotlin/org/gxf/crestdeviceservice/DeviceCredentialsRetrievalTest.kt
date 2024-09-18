@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice
 
-import java.time.Instant
-import org.assertj.core.api.Assertions.assertThat
 import org.gxf.crestdeviceservice.psk.entity.PreSharedKey
 import org.gxf.crestdeviceservice.psk.entity.PreSharedKeyStatus
 import org.gxf.crestdeviceservice.psk.repository.PskRepository
+
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,20 +20,12 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.kafka.test.context.EmbeddedKafka
 
+import java.time.Instant
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EmbeddedKafka(
-    topics = ["\${kafka.producers.device-message.topic}"],
-)
+@EmbeddedKafka(topics = ["\${kafka.producers.device-message.topic}"])
 class DeviceCredentialsRetrievalTest {
-
-    companion object {
-        private const val IDENTITY = "1234"
-        private const val PRE_SHARED_KEY = "1234567890123456"
-        private const val SECRET = "123456789"
-    }
-
     @Autowired private lateinit var restTemplate: TestRestTemplate
-
     @Autowired private lateinit var pskRepository: PskRepository
 
     @BeforeEach
@@ -71,5 +63,11 @@ class DeviceCredentialsRetrievalTest {
                 "/psk", HttpMethod.GET, HttpEntity<Unit>(headers), String::class.java)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    }
+
+    companion object {
+        private const val IDENTITY = "1234"
+        private const val PRE_SHARED_KEY = "1234567890123456"
+        private const val SECRET = "123456789"
     }
 }

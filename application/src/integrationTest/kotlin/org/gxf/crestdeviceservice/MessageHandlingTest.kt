@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice
 
-import java.time.Duration
-import org.assertj.core.api.Assertions.assertThat
 import org.gxf.crestdeviceservice.IntegrationTestHelper.createKafkaConsumer
 import org.gxf.crestdeviceservice.IntegrationTestHelper.getFileContentAsString
 import org.gxf.crestdeviceservice.config.KafkaProducerProperties
+
+import org.assertj.core.api.Assertions.assertThat
 import org.gxf.sng.avro.DeviceMessage
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,6 +24,8 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
 
+import java.time.Duration
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EmbeddedKafka(
     topics = ["\${kafka.producers.device-message.topic}"],
@@ -31,21 +33,18 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @EnableConfigurationProperties(KafkaProducerProperties::class)
 class MessageHandlingTest {
-
     @Autowired private lateinit var kafkaProducerProperties: KafkaProducerProperties
-
     @Autowired private lateinit var embeddedKafkaBroker: EmbeddedKafkaBroker
-
     @Autowired private lateinit var testRestTemplate: TestRestTemplate
 
     @Test
     fun shouldProduceMessageForValidRequest() {
         val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
-        val request: HttpEntity<String> = HttpEntity<String>(getFileContentAsString("message.json"), headers)
+        val request: HttpEntity<String> = HttpEntity(getFileContentAsString("message.json"), headers)
 
         val consumer =
             createKafkaConsumer(embeddedKafkaBroker, kafkaProducerProperties.deviceMessage.topic)
-        val response: ResponseEntity<String> = testRestTemplate.postForEntity<String>("/sng/1", request)
+        val response: ResponseEntity<String> = testRestTemplate.postForEntity("/sng/1", request)
 
         assertThat(response.body).isEqualTo("0")
 
@@ -56,7 +55,7 @@ class MessageHandlingTest {
         val expectedJsonNode = ObjectMapper().readTree(getFileContentAsString("message.json"))
         val deviceMessage =
             records.records(kafkaProducerProperties.deviceMessage.topic).first().value()
-                as DeviceMessage
+                    as DeviceMessage
         val payloadJsonNode = ObjectMapper().readTree(deviceMessage.payload)
 
         assertThat(payloadJsonNode).isEqualTo(expectedJsonNode)

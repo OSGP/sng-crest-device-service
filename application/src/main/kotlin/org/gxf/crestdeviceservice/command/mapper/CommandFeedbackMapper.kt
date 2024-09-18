@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.command.mapper
 
+import org.gxf.crestdeviceservice.command.entity.Command
+
 import com.alliander.sng.Command as ExternalCommand
 import com.alliander.sng.CommandFeedback
 import com.alliander.sng.CommandStatus as ExternalCommandStatus
+
 import java.time.Instant
-import org.gxf.crestdeviceservice.command.entity.Command
 
 object CommandFeedbackMapper {
     fun commandEntityToCommandFeedback(

@@ -3,31 +3,38 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.consumer
 
-import com.alliander.sng.DeviceCredentials
-import io.github.oshai.kotlinlogging.KotlinLogging
-import java.time.Instant
-import java.util.UUID
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.entity.Command.CommandStatus
 import org.gxf.crestdeviceservice.command.service.CommandService
 import org.gxf.crestdeviceservice.psk.service.PskDecryptionService
 import org.gxf.crestdeviceservice.psk.service.PskService
+
+import com.alliander.sng.DeviceCredentials
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 
+import java.time.Instant
+import java.util.UUID
+
+/**
+ * @param pskService
+ * @param pskDecryptionService
+ * @param commandService
+ */
 @Service
 class IncomingDeviceCredentialsConsumer(
     private val pskService: PskService,
     private val pskDecryptionService: PskDecryptionService,
     private val commandService: CommandService
 ) {
-
     private val logger = KotlinLogging.logger {}
 
     @KafkaListener(
         id = "pre-shared-key",
         idIsGroup = false,
-        topics = ["\${kafka.consumers.pre-shared-key.topic}"])
+        topics = ["\${kafka.consumers.pre-shared-key.topic}"]
+    )
     fun handleIncomingDeviceCredentials(deviceCredentials: DeviceCredentials) {
         logger.info { "Received key for ${deviceCredentials.imei}" }
 

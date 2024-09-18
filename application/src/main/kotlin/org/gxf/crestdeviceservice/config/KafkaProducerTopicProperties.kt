@@ -3,4 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.config
 
-class KafkaProducerTopicProperties(val topic: String)
+/**
+ * @property topic
+ */
+data class KafkaProducerTopicProperties(val topic: String)

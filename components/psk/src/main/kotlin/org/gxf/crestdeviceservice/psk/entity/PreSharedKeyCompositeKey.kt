@@ -5,6 +5,10 @@ package org.gxf.crestdeviceservice.psk.entity
 
 import java.io.Serializable
 
+/**
+ * @property identity
+ * @property revision
+ */
 class PreSharedKeyCompositeKey(val identity: String?, val revision: Int?) : Serializable {
     constructor() : this(null, null)
 }

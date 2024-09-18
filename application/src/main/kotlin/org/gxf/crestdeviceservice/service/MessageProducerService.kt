@@ -3,15 +3,21 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.service
 
+import org.gxf.crestdeviceservice.config.KafkaProducerProperties
+
 import com.fasterxml.jackson.databind.JsonNode
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.time.Instant
 import org.apache.avro.specific.SpecificRecordBase
-import org.gxf.crestdeviceservice.config.KafkaProducerProperties
 import org.gxf.sng.avro.DeviceMessage
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
+import java.time.Instant
+
+/**
+ * @param kafkaTemplate
+ * @param kafkaProducerProperties
+ */
 @Service
 class MessageProducerService(
     private val kafkaTemplate: KafkaTemplate<String, SpecificRecordBase>,

@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.command.mapper
 
-import com.alliander.sng.Command as ExternalCommand
-import java.util.UUID
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.exception.CommandValidationException
+
+import com.alliander.sng.Command as ExternalCommand
+
+import java.util.UUID
 
 object CommandMapper {
     fun externalCommandToCommandEntity(

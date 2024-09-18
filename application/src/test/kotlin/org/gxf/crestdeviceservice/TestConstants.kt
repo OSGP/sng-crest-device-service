@@ -9,6 +9,6 @@ import java.util.UUID
 object TestConstants {
     const val DEVICE_ID = "device-id"
     const val MESSAGE_RECEIVED = "Command received"
-    val CORRELATION_ID = UUID.randomUUID()
+    val correlationId = UUID.randomUUID()
     val timestamp = Instant.now()
 }
