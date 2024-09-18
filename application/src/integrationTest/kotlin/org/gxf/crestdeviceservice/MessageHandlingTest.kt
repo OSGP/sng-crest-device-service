@@ -18,6 +18,7 @@ import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
@@ -40,11 +41,11 @@ class MessageHandlingTest {
     @Test
     fun shouldProduceMessageForValidRequest() {
         val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
-        val request = HttpEntity<String>(getFileContentAsString("message.json"), headers)
+        val request: HttpEntity<String> = HttpEntity<String>(getFileContentAsString("message.json"), headers)
 
         val consumer =
             createKafkaConsumer(embeddedKafkaBroker, kafkaProducerProperties.deviceMessage.topic)
-        val response = testRestTemplate.postForEntity<String>("/sng/1", request)
+        val response: ResponseEntity<String> = testRestTemplate.postForEntity<String>("/sng/1", request)
 
         assertThat(response.body).isEqualTo("0")
 
