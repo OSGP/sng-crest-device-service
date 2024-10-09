@@ -40,7 +40,7 @@ class IncomingDeviceCredentialsConsumerTest {
 
         verify(pskService).setInitialKeyForDevice(imei, decryptedPsk, decryptedSecret)
         verify(pskService).generateNewReadyKeyForDevice(imei)
-        verify(commandService).saveCommandEntities(any<List<Command>>())
+        verify(commandService).save(any<List<Command>>())
     }
 
     @Test
@@ -61,6 +61,6 @@ class IncomingDeviceCredentialsConsumerTest {
 
         verify(pskService).setInitialKeyForDevice(imei, decryptedPsk, decryptedSecret)
         verify(pskService, times(0)).generateNewReadyKeyForDevice(imei)
-        verify(commandService, times(0)).saveCommandEntities(any<List<Command>>())
+        verify(commandService, times(0)).save(any<List<Command>>())
     }
 }

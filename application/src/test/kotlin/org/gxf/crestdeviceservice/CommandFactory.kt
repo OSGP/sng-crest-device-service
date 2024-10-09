@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice
 
+import java.time.Instant
 import java.util.UUID
 import org.gxf.crestdeviceservice.TestConstants.CORRELATION_ID
 import org.gxf.crestdeviceservice.TestConstants.DEVICE_ID
@@ -30,23 +31,35 @@ object CommandFactory {
             commandValue = null,
             status = Command.CommandStatus.PENDING)
 
-    fun pendingRebootCommand() =
+    fun pendingRebootCommand(
+        timestampIssued: Instant = timestamp,
+        correlationId: UUID = CORRELATION_ID,
+        status: Command.CommandStatus = Command.CommandStatus.PENDING
+    ) =
+        Command(
+            id = UUID.randomUUID(),
+            deviceId = DEVICE_ID,
+            correlationId = correlationId,
+            timestampIssued = timestampIssued,
+            type = Command.CommandType.REBOOT,
+            commandValue = null,
+            status = status)
+
+    fun rebootCommandInProgress() = pendingRebootCommand().start()
+
+    fun pskCommandInProgress() = pendingPskCommand().start()
+
+    fun pskSetCommandInProgress() = pendingPskSetCommand().start()
+
+    fun pskCommandsInProgress() = listOf(pskCommandInProgress(), pskSetCommandInProgress())
+
+    fun firmwareCommandInProgress() =
         Command(
             id = UUID.randomUUID(),
             deviceId = DEVICE_ID,
             correlationId = CORRELATION_ID,
             timestampIssued = timestamp,
-            type = Command.CommandType.REBOOT,
-            commandValue = null,
-            status = Command.CommandStatus.PENDING)
-
-    fun pendingPskCommands() = listOf(pendingPskCommand(), pendingPskSetCommand())
-
-    fun rebootCommandInProgress() = pendingRebootCommand().copy(status = Command.CommandStatus.IN_PROGRESS)
-
-    fun pskCommandInProgress() = pendingPskCommand().copy(status = Command.CommandStatus.IN_PROGRESS)
-
-    fun pskSetCommandInProgress() = pendingPskSetCommand().copy(status = Command.CommandStatus.IN_PROGRESS)
-
-    fun pskCommandsInProgress() = listOf(pskCommandInProgress(), pskSetCommandInProgress())
+            type = Command.CommandType.FIRMWARE,
+            commandValue = "the-firmware-to-install",
+            status = Command.CommandStatus.IN_PROGRESS)
 }

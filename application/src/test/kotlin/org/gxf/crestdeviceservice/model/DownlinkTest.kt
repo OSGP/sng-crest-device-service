@@ -17,7 +17,7 @@ class DownlinkTest {
         val result = downlink.addIfItFits(downlinkToAdd)
 
         assertThat(result).isTrue()
-        assertThat(downlink.downlink).isEqualTo("!$downlinkToAdd")
+        assertThat(downlink.getDownlink()).isEqualTo("!$downlinkToAdd")
     }
 
     @Test
@@ -31,7 +31,7 @@ class DownlinkTest {
 
         assertThat(existingFits).isTrue()
         assertThat(result).isTrue()
-        assertThat(downlink.downlink).isEqualTo("!$downlinkExisting;$downlinkToAdd")
+        assertThat(downlink.getDownlink()).isEqualTo("!$downlinkExisting;$downlinkToAdd")
     }
 
     @Test
@@ -54,6 +54,11 @@ class DownlinkTest {
 
         assertThat(existingFits).isTrue()
         assertThat(added).isFalse()
-        assertThat(downlink.downlink).isEqualTo("!$downlinkExisting")
+        assertThat(downlink.getDownlink()).isEqualTo("!$downlinkExisting")
+    }
+
+    @Test
+    fun shouldReturnDefaultDownlinkWhenNoCommandGiven() {
+        assertThat(Downlink(maxSize).getDownlink()).isEqualTo(Downlink.RESPONSE_SUCCESS)
     }
 }

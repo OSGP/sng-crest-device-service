@@ -5,9 +5,10 @@ package org.gxf.crestdeviceservice.model
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 
-data class Downlink(val maxSize: Int) {
-    var downlink = ""
-        private set
+class Downlink(private val maxSize: Int = 1024) {
+    private var downlink = ""
+
+    fun getDownlink() = downlink.ifBlank { RESPONSE_SUCCESS }
 
     private val logger = KotlinLogging.logger {}
 
@@ -30,5 +31,9 @@ data class Downlink(val maxSize: Int) {
             return true
         }
         return false
+    }
+
+    companion object {
+        const val RESPONSE_SUCCESS = "0"
     }
 }

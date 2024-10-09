@@ -12,19 +12,43 @@ import java.time.Instant
 import java.util.UUID
 
 @Entity
-data class Command(
+class Command(
     @Id @Generated val id: UUID,
     val deviceId: String,
     val correlationId: UUID,
     val timestampIssued: Instant,
     @Enumerated(EnumType.STRING) val type: CommandType,
     val commandValue: String?,
-    @Enumerated(EnumType.STRING) var status: CommandStatus,
+    status: CommandStatus,
 ) {
-    enum class CommandType(val downlink: String, val urcsSuccess: List<String>, val urcsError: List<String>) {
-        PSK("PSK", listOf("PSK:TMP"), listOf("PSK:DLER", "PSK:HSER")),
-        PSK_SET("PSK:SET", listOf("PSK:SET"), listOf("PSK:DLER", "PSK:HSER", "PSK:EQER")),
-        REBOOT("CMD:REBOOT", listOf("INIT", "WDR"), listOf())
+    init {
+        if (type.needsCommandValue) {
+            checkNotNull(commandValue)
+        }
+    }
+
+    @Enumerated(EnumType.STRING)
+    var status: CommandStatus = status
+        private set
+
+    fun start() = this.apply { this.status = CommandStatus.IN_PROGRESS }
+
+    fun finish() = this.apply { this.status = CommandStatus.SUCCESSFUL }
+
+    fun fail() = this.apply { this.status = CommandStatus.ERROR }
+
+    fun cancel() = this.apply { this.status = CommandStatus.CANCELLED }
+
+    enum class CommandType(
+        val downlink: String,
+        val urcsSuccess: List<String>,
+        val urcsError: List<String>,
+        val needsCommandValue: Boolean
+    ) {
+        PSK("PSK", listOf("PSK:TMP"), listOf("PSK:DLER", "PSK:HSER"), false),
+        PSK_SET("PSK:SET", listOf("PSK:SET"), listOf("PSK:DLER", "PSK:HSER", "PSK:EQER"), false),
+        REBOOT("CMD:REBOOT", listOf("INIT", "WDR"), listOf(), false),
+        FIRMWARE("OTA", listOf("OTA:SUC"), listOf("OTA:CSER", "OTA:HSER", "OTA:RST", "OTA:SWNA", "OTA:FLER"), true),
     }
 
     enum class CommandStatus {

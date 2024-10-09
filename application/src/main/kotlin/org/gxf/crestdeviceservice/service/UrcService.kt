@@ -7,11 +7,11 @@ import com.alliander.sng.CommandStatus as ExternalCommandStatus
 import com.fasterxml.jackson.databind.JsonNode
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.gxf.crestdeviceservice.command.entity.Command
-import org.gxf.crestdeviceservice.command.entity.Command.CommandStatus
 import org.gxf.crestdeviceservice.command.exception.NoMatchingCommandException
 import org.gxf.crestdeviceservice.command.mapper.CommandFeedbackMapper
 import org.gxf.crestdeviceservice.command.service.CommandFeedbackService
 import org.gxf.crestdeviceservice.command.service.CommandService
+import org.gxf.crestdeviceservice.model.Downlink
 import org.gxf.crestdeviceservice.model.ErrorUrc.Companion.getMessageFromCode
 import org.gxf.crestdeviceservice.psk.exception.NoExistingPskException
 import org.gxf.crestdeviceservice.psk.service.PskService
@@ -38,8 +38,9 @@ class UrcService(
             logger.debug { "Received message with urcs ${urcs.joinToString(", ")}" }
         }
 
-        val downlinks = getDownlinksFromMessage(body).filter { downlink -> downlink != "0" && downlink.isNotBlank() }
-        downlinks.forEach { downlink -> handleDownlinkFromMessage(deviceId, downlink, urcs) }
+        getDownlinksFromMessage(body)
+            .filter { downlink -> downlink != Downlink.RESPONSE_SUCCESS && downlink.isNotBlank() }
+            .forEach { downlink -> handleDownlinkFromMessage(deviceId, downlink, urcs) }
     }
 
     private fun getUrcsFromMessage(body: JsonNode) = body[URC_FIELD].filter { it.isTextual }.map { it.asText() }
@@ -60,11 +61,7 @@ class UrcService(
 
     private fun getCommandThatDownlinkIsAbout(deviceId: String, downlink: String): Command? {
         val commandsInProgress = commandService.getAllCommandsInProgressForDevice(deviceId)
-        return try {
-            commandsInProgress.first { command -> downlinkConcernsCommandType(downlink, command.type) }
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        return commandsInProgress.firstOrNull { command -> downlinkConcernsCommandType(downlink, command.type) }
     }
 
     private fun downlinkConcernsCommandType(downlink: String, commandType: Command.CommandType): Boolean {
@@ -113,7 +110,7 @@ class UrcService(
             "Command ${command.type} failed for device with id ${command.deviceId}. Error(s): $errorMessages."
         }
 
-        val failedCommand = commandService.saveCommandWithNewStatus(command, CommandStatus.ERROR)
+        val failedCommand = commandService.save(command.fail())
         val commandFeedback =
             CommandFeedbackMapper.commandEntityToCommandFeedback(
                 failedCommand, ExternalCommandStatus.Error, "Command failed. Error(s): $errorMessages.")
@@ -135,7 +132,7 @@ class UrcService(
             "Command ${command.type} for device ${command.deviceId} handled successfully. Saving command and sending feedback to Maki."
         }
 
-        val successfulCommand = commandService.saveCommandWithNewStatus(command, CommandStatus.SUCCESSFUL)
+        val successfulCommand = commandService.save(command.finish())
         val commandFeedback =
             CommandFeedbackMapper.commandEntityToCommandFeedback(
                 successfulCommand, ExternalCommandStatus.Successful, "Command handled successfully")

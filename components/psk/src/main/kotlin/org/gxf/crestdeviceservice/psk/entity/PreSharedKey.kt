@@ -10,6 +10,7 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.IdClass
 import java.time.Instant
+import org.apache.commons.codec.digest.DigestUtils
 import org.gxf.crestdeviceservice.psk.entity.convertors.DatabaseFieldEncryptor
 
 @Entity
@@ -21,4 +22,6 @@ class PreSharedKey(
     @Convert(converter = DatabaseFieldEncryptor::class) val preSharedKey: String,
     @Convert(converter = DatabaseFieldEncryptor::class) val secret: String,
     @Enumerated(EnumType.STRING) var status: PreSharedKeyStatus
-)
+) {
+    fun commandHash(): String = DigestUtils.sha256Hex("$secret$preSharedKey")
+}

@@ -16,6 +16,6 @@ class Firmware(
     @Id @Generated val id: UUID,
     val name: String,
     val hash: String,
-    val previousFirmwareId: UUID?,
-    @OneToMany @Cascade(CascadeType.ALL) val packets: List<FirmwarePacket>
+    val previousFirmwareId: UUID? = null,
+    @OneToMany @Cascade(CascadeType.ALL) val packets: List<FirmwarePacket> = emptyList(),
 )
