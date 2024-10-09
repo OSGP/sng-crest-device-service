@@ -24,7 +24,7 @@ class PskService(private val pskRepository: PskRepository, private val pskConfig
 
     private val logger = KotlinLogging.logger {}
 
-    private val secureRandom = SecureRandom.getInstanceStrong()
+    private val secureRandom = SecureRandom()
 
     fun getCurrentActiveKey(deviceId: String) = getCurrentActivePsk(deviceId)?.preSharedKey
 
