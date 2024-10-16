@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RestController
 class RspController(private val commandService: CommandService) {
     private val logger = KotlinLogging.logger {}
 
-    @PostMapping("rsp/{deviceId}/test")
+    @PostMapping("test/{deviceId}/rsp")
     fun addRspCommand(@PathVariable deviceId: String): ResponseEntity<Unit> {
         saveRspCommand(deviceId, Command.CommandType.RSP)
 
         return ResponseEntity.ok().build()
     }
 
-    @PostMapping("rsp2/{deviceId}/test")
+    @PostMapping("test/{deviceId}/rsp2")
     fun addRsp2Command(@PathVariable deviceId: String): ResponseEntity<Unit> {
         saveRspCommand(deviceId, Command.CommandType.RSP2)
 
@@ -32,7 +32,7 @@ class RspController(private val commandService: CommandService) {
     }
 
     private fun saveRspCommand(deviceId: String, commandType: Command.CommandType) {
-        logger.info { "received $commandType command" }
+        logger.info { "received $commandType command for device '$deviceId'" }
 
         commandService.save(
             Command(
