@@ -147,6 +147,27 @@ class UrcServiceTest {
     }
 
     @Test
+    fun handleSuccessUrcForRspCommand() {
+        val urcs = listOf("INIT", "WDR")
+        val commandInProgress = CommandFactory.rebootCommandInProgress()
+        val commandSuccessful = commandInProgress.copy(status = Command.CommandStatus.SUCCESSFUL)
+        val message = updateUrcInMessage(urcs, REBOOT_DOWNLINK)
+        val commandFeedback =
+            CommandFeedbackMapper.commandEntityToCommandFeedback(
+                commandSuccessful, CommandStatus.Successful, "Command handled successfully")
+
+        whenever(pskService.isPendingPskPresent(DEVICE_ID)).thenReturn(false)
+        whenever(commandService.getAllCommandsInProgressForDevice(DEVICE_ID)).thenReturn(listOf(commandInProgress))
+        whenever(commandService.saveCommandWithNewStatus(commandInProgress, Command.CommandStatus.SUCCESSFUL))
+            .thenReturn(commandSuccessful)
+
+        urcService.interpretURCsInMessage(DEVICE_ID, message)
+
+        verify(commandService).saveCommandWithNewStatus(commandInProgress, Command.CommandStatus.SUCCESSFUL)
+        verify(commandFeedbackService).sendFeedback(refEq(commandFeedback, "timestampStatus"))
+    }
+
+    @Test
     fun shouldDoNothingIfUrcDoesNotConcernCommandInProgress() {
         val urcs = listOf("ENPD")
         val commandInProgress = CommandFactory.rebootCommandInProgress()

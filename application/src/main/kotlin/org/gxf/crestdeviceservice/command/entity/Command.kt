@@ -24,7 +24,9 @@ data class Command(
     enum class CommandType(val downlink: String, val urcsSuccess: List<String>, val urcsError: List<String>) {
         PSK("PSK", listOf("PSK:TMP"), listOf("PSK:DLER", "PSK:HSER")),
         PSK_SET("PSK:SET", listOf("PSK:SET"), listOf("PSK:DLER", "PSK:HSER", "PSK:EQER")),
-        REBOOT("CMD:REBOOT", listOf("INIT", "WDR"), listOf())
+        REBOOT("CMD:REBOOT", listOf("INIT", "WDR"), listOf()),
+        RSP("CMD:RSP", listOf("CMD:RSP"), listOf("DLER")),
+        RSP2("CMD:RSP2", listOf("CMD:RSP2"), listOf("DLER"))
     }
 
     enum class CommandStatus {

@@ -82,18 +82,15 @@ class UrcService(
     }
 
     private fun handleUrcsForCommand(urcs: List<String>, command: Command, downlink: String) {
-        if (urcsContainErrorsForCommand(urcs, command)) {
-            handleCommandErrors(command, urcs)
-        } else if (urcsContainSuccessesForCommand(urcs, command)) {
-            handleCommandSuccesses(command)
-        } else {
-            logger.warn {
-                "No urcs received for command '${command.type}' that was sent in downlink: $downlink. Urcs received: ${
-                    urcs.joinToString(
-                        ", "
-                    )
-                }."
-            }
+        when {
+            urcsContainErrorsForCommand(urcs, command) -> handleCommandErrors(command, urcs)
+            urcsContainSuccessesForCommand(urcs, command) -> handleCommandSuccesses(command)
+            else ->
+                logger.warn {
+                    "No urcs received for command '${command.type}' that was sent in downlink: $downlink. Urcs received: ${
+                        urcs.joinToString()
+                    }."
+                }
         }
     }
 
