@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.controller
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.time.Instant
 import java.util.UUID
 import org.gxf.crestdeviceservice.command.entity.Command
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class RspController(private val commandService: CommandService) {
+    private val logger = KotlinLogging.logger {}
+
     @PostMapping("rsp/{deviceId}/test")
     fun addRspCommand(@PathVariable deviceId: String): ResponseEntity<Unit> {
         saveRspCommand(deviceId, Command.CommandType.RSP)
@@ -29,6 +32,8 @@ class RspController(private val commandService: CommandService) {
     }
 
     private fun saveRspCommand(deviceId: String, commandType: Command.CommandType) {
+        logger.info { "received $commandType command" }
+
         commandService.save(
             Command(
                 id = UUID.randomUUID(),

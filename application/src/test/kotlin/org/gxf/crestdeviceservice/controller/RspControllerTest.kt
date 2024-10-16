@@ -30,7 +30,7 @@ class RspControllerTest {
     @Test
     fun `should save RSP command`() {
         mockMvc //
-            .perform(post("/rsp/device-id/test")) //
+            .perform(post("/rsp/{deviceId}/test", DEVICE_ID)) //
             .andExpect(status().isOk)
 
         verify(commandService).save(capture(commandCaptor))
@@ -44,7 +44,7 @@ class RspControllerTest {
     @Test
     fun `should save RSP2 command`() {
         mockMvc //
-            .perform(post("/rsp2/device-id/test")) //
+            .perform(post("/rsp2/{deviceId}/test", DEVICE_ID)) //
             .andExpect(status().isOk)
 
         verify(commandService).save(capture(commandCaptor))

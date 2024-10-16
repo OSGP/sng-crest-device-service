@@ -98,7 +98,7 @@ class CommandService(
         commandRepository.findAllByDeviceIdAndStatusOrderByTimestampIssuedAsc(
             deviceId, Command.CommandStatus.IN_PROGRESS)
 
-    open fun save(command: Command) {
+    fun save(command: Command) {
         commandRepository.save(command)
     }
 
