@@ -1,0 +1,47 @@
+{
+  "name": "Firmwares",
+  "namespace": "com.alliander.sng",
+  "type": "record",
+  "fields": [
+    {
+      "name": "firmwares",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "Firmware",
+          "namespace": "com.alliander.sng",
+          "type": "record",
+          "fields": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "type",
+              "type": {
+                "name": "FirmwareType",
+                "type": "enum",
+                "symbols": [
+                  "device",
+                  "modem"
+                ]
+              }
+            },
+            {
+              "name": "version",
+              "type": "string"
+            },
+            {
+              "name": "from_version",
+              "type": ["string", "null"]
+            },
+            {
+              "name": "number_of_packages",
+              "type": "int"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

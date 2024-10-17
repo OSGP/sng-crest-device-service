@@ -2,7 +2,7 @@
 #
 #SPDX-License-Identifier: Apache-2.0
 
-# The crest device service should always require mutual tls
+# Port for proxy should always require mutual tls
 server:
   ssl:
     enabled: true

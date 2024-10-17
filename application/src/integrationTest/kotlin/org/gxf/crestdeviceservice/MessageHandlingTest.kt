@@ -23,7 +23,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @EmbeddedKafka(
     topics = ["\${kafka.producers.device-message.topic}"],
 )

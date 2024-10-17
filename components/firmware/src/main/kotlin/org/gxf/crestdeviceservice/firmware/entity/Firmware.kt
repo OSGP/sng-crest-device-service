@@ -15,7 +15,7 @@ import org.hibernate.annotations.CascadeType
 class Firmware(
     @Id @Generated val id: UUID,
     val name: String,
-    val hash: String,
+    val version: String,
     val previousFirmwareId: UUID?,
-    @OneToMany @Cascade(CascadeType.ALL) val packets: List<FirmwarePacket>
+    @OneToMany(mappedBy = "firmware") @Cascade(CascadeType.ALL) val packets: MutableList<FirmwarePacket>
 )

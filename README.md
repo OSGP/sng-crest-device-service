@@ -31,4 +31,4 @@ To test this flow locally:
 Communication between the COAP HTTP Proxy and the Crest device service should be encrypted using mutual TLS.
 
 The repositories contain test certificates that can be used for local testing. (they are not included in the jar or docker image)
-They can be also be (re)generated using the [generate_certificates.sh](generate_certificates.sh) script.
+They can be also be (re)generated using the [generate_certificates.sh](scripts/generate_certificates.sh) script.

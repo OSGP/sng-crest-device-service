@@ -23,13 +23,15 @@ class DeviceCredentialsControllerTest {
 
     @MockBean private lateinit var metricService: MetricService
 
+    private val url = "https://localhost:9000/psk"
+
     @Test
     fun shouldReturn404WhenPskForIdentityIsNotFound() {
         val identity = "identity"
         whenever(pskService.getCurrentActiveKey(identity)).thenReturn(null)
 
         mvcRequest
-            .perform(MockMvcRequestBuilders.get("/psk").header("x-device-identity", identity))
+            .perform(MockMvcRequestBuilders.get(url).header("x-device-identity", identity))
             .andExpect(MockMvcResultMatchers.status().isNotFound)
     }
 
@@ -39,7 +41,7 @@ class DeviceCredentialsControllerTest {
         whenever(pskService.getCurrentActiveKey(identity)).thenReturn("key")
 
         mvcRequest
-            .perform(MockMvcRequestBuilders.get("/psk").header("x-device-identity", identity))
+            .perform(MockMvcRequestBuilders.get(url).header("x-device-identity", identity))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().string("key"))
     }

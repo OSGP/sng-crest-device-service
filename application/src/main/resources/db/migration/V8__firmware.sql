@@ -2,7 +2,7 @@ CREATE TABLE firmware
 (
     id                   uuid         not null,
     name                 varchar(255) not null,
-    hash                 varchar(255) not null,
+    version              varchar(255) not null,
     previous_firmware_id uuid          null,
     PRIMARY KEY (id),
     CONSTRAINT fk_previous_firmware

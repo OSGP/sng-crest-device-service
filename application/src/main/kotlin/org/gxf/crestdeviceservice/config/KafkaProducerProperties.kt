@@ -8,5 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties("kafka.producers")
 class KafkaProducerProperties(
     val deviceMessage: KafkaProducerTopicProperties,
-    val commandFeedback: KafkaProducerTopicProperties
+    val commandFeedback: KafkaProducerTopicProperties,
+    val firmware: KafkaProducerTopicProperties
 )

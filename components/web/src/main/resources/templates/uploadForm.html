@@ -1,0 +1,40 @@
+<!--
+Copyright 2024 Alliander N.V.
+-->
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOD</title>
+    <link th:href="@{/main.css}" rel="stylesheet" />
+</head>
+<body>
+
+
+<main class="container">
+    <div class="card">
+        <div class="mb-3">
+            <h2>File to upload:</h2>
+            <form method="POST" enctype="multipart/form-data" action="/web/firmware">
+                <input type="file" name="file">
+                <br>
+                <button type="submit">Upload</button>
+                <br>
+                <br>
+                <table>
+                    <tr th:if="${message}">
+                        <td><b>Message: </b></td>
+                        <td th:text="${message}"></td>
+                    </tr>
+                    <tr th:if="${filename}">
+                        <td><b>Filename: </b></td>
+                        <td th:text="${filename}"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

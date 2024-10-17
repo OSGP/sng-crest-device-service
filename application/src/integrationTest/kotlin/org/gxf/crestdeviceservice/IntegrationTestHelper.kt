@@ -4,6 +4,7 @@
 package org.gxf.crestdeviceservice
 
 import com.alliander.sng.CommandFeedback
+import com.alliander.sng.Firmwares
 import com.gxf.utilities.kafka.avro.AvroDeserializer
 import com.gxf.utilities.kafka.avro.AvroSerializer
 import org.apache.avro.specific.SpecificRecordBase
@@ -30,7 +31,9 @@ object IntegrationTestHelper {
             DefaultKafkaConsumerFactory(
                 testProperties,
                 StringDeserializer(),
-                AvroDeserializer(listOf(DeviceMessage.getClassSchema(), CommandFeedback.getClassSchema())))
+                AvroDeserializer(
+                    listOf(
+                        DeviceMessage.getClassSchema(), CommandFeedback.getClassSchema(), Firmwares.getClassSchema())))
         val consumer = consumerFactory.createConsumer()
         embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, topic)
         return consumer

@@ -5,4 +5,6 @@ package org.gxf.crestdeviceservice.firmware.entity
 
 import java.io.Serializable
 
-data class FirmwarePacketCompositeKey(val firmware: Firmware, val packetNumber: Int) : Serializable
+data class FirmwarePacketCompositeKey(var firmware: Firmware?, var packetNumber: Int?) : Serializable {
+    constructor() : this(null, null)
+}

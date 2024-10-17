@@ -8,4 +8,7 @@ import org.gxf.crestdeviceservice.firmware.entity.FirmwarePacketCompositeKey
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
-@Repository interface FirmwarePacketRepository : CrudRepository<FirmwarePacket, FirmwarePacketCompositeKey>
+@Repository
+interface FirmwarePacketRepository : CrudRepository<FirmwarePacket, FirmwarePacketCompositeKey> {
+    override fun findAll(): List<FirmwarePacket>
+}

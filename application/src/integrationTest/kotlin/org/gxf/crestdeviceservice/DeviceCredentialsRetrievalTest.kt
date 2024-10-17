@@ -20,7 +20,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.kafka.test.context.EmbeddedKafka
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @EmbeddedKafka(
     topics = ["\${kafka.producers.device-message.topic}"],
 )
