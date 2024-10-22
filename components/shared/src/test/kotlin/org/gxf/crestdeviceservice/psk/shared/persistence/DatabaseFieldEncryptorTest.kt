@@ -16,8 +16,6 @@ class DatabaseFieldEncryptorTest {
         val encrypted = databaseFieldEncryptor.convertToDatabaseColumn(expected)
         val decrypted = databaseFieldEncryptor.convertToEntityAttribute(encrypted)
 
-        println("$encrypted (${encrypted.length} characters)")
-
         assertThat(encrypted).isNotEqualTo(expected)
         assertThat(decrypted).isEqualTo(expected)
     }
