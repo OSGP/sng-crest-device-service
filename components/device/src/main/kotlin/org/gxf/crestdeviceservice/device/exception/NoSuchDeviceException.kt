@@ -3,4 +3,4 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.device.exception
 
-class NoSuchDevice(id: String) : Exception("Duplicate device: $id")
+class NoSuchDeviceException(id: String) : Exception("Duplicate device: $id")

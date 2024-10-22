@@ -7,8 +7,8 @@ import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gxf.crestdeviceservice.device.entity.Device
-import org.gxf.crestdeviceservice.device.exception.DuplicateDevice
-import org.gxf.crestdeviceservice.device.exception.NoSuchDevice
+import org.gxf.crestdeviceservice.device.exception.DuplicateDeviceException
+import org.gxf.crestdeviceservice.device.exception.NoSuchDeviceException
 import org.gxf.crestdeviceservice.device.repository.DeviceRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -45,7 +45,8 @@ class DeviceServiceTest {
     fun `should not create duplicate device`() {
         whenever(repository.existsById(DEVICE_ID)).thenReturn(true)
 
-        assertThatThrownBy { service.createDevice(DEVICE_ID, SECRET) }.isInstanceOf(DuplicateDevice::class.java)
+        assertThatThrownBy { service.createDevice(DEVICE_ID, SECRET) }
+            .isInstanceOf(DuplicateDeviceException::class.java)
 
         verify(repository, never()).save(any())
     }
@@ -63,6 +64,6 @@ class DeviceServiceTest {
     fun `should not retrieve nonexistent device`() {
         whenever(repository.findById(DEVICE_ID)).thenReturn(Optional.empty())
 
-        assertThatThrownBy { service.getDevice(DEVICE_ID) }.isInstanceOf(NoSuchDevice::class.java)
+        assertThatThrownBy { service.getDevice(DEVICE_ID) }.isInstanceOf(NoSuchDeviceException::class.java)
     }
 }
