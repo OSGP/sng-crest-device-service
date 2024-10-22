@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class PskService(private val pskRepository: PskRepository, private val pskConfiguration: PskConfiguration) {
-
     companion object {
         private const val KEY_LENGTH = 16L
         private const val ALLOWED_CHARACTERS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -57,12 +56,12 @@ class PskService(private val pskRepository: PskRepository, private val pskConfig
         pskRepository.save(psk)
     }
 
-    fun setInitialKeyForDevice(deviceId: String, psk: String, secret: String) {
+    fun setInitialKeyForDevice(deviceId: String, psk: String) {
         logger.info { "Prepare initial key for device $deviceId" }
         if (pskRepository.countByIdentityAndStatus(deviceId, PreSharedKeyStatus.ACTIVE) != 0L) {
             throw InitialKeySetException("Key already exists for device. Key cannot be overridden")
         }
-        pskRepository.save(PreSharedKey(deviceId, 0, Instant.now(), psk, secret, PreSharedKeyStatus.ACTIVE))
+        pskRepository.save(PreSharedKey(deviceId, 0, Instant.now(), psk, PreSharedKeyStatus.ACTIVE))
     }
 
     fun generateNewReadyKeyForDevice(deviceId: String) {
@@ -71,8 +70,7 @@ class PskService(private val pskRepository: PskRepository, private val pskConfig
         val previousPSK =
             getCurrentActivePsk(deviceId) ?: throw NoExistingPskException("There is no active key present")
         val newVersion = previousPSK.revision + 1
-        pskRepository.save(
-            PreSharedKey(deviceId, newVersion, Instant.now(), newKey, previousPSK.secret, PreSharedKeyStatus.READY))
+        pskRepository.save(PreSharedKey(deviceId, newVersion, Instant.now(), newKey, PreSharedKeyStatus.READY))
     }
 
     private fun generatePsk() =

@@ -10,6 +10,8 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.service.CommandService
 import org.gxf.crestdeviceservice.config.MessageProperties
+import org.gxf.crestdeviceservice.device.entity.Device
+import org.gxf.crestdeviceservice.device.service.DeviceService
 import org.gxf.crestdeviceservice.model.Downlink
 import org.gxf.crestdeviceservice.psk.entity.PreSharedKey
 import org.gxf.crestdeviceservice.psk.exception.NoExistingPskException
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class DownlinkService(
+    private val deviceService: DeviceService,
     private val pskService: PskService,
     private val commandService: CommandService,
     private val messageProperties: MessageProperties
@@ -75,36 +78,40 @@ class DownlinkService(
         commandService.saveCommandWithNewStatus(command, Command.CommandStatus.IN_PROGRESS)
     }
 
-    private fun getDownlinkPerCommand(command: Command): String {
-        if (command.type == Command.CommandType.PSK) {
-            val newKey = getCurrentReadyPsk(command)
+    private fun getDownlinkPerCommand(command: Command) =
+        when (command.type) {
+            Command.CommandType.PSK -> {
+                val device = deviceService.getDevice(command.deviceId)
+                val newKey = getCurrentReadyPsk(command)
 
-            return createPskCommand(newKey)
-        }
-        if (command.type == Command.CommandType.PSK_SET) {
-            val newKey = getCurrentReadyPsk(command)
-            logger.debug {
-                "Create PSK set command for key for device ${newKey.identity} with revision ${newKey.revision} and status ${newKey.status}"
+                createPskCommand(device, newKey)
             }
-            return createPskSetCommand(newKey)
-        }
+            Command.CommandType.PSK_SET -> {
+                val device = deviceService.getDevice(command.deviceId)
+                val newKey = getCurrentReadyPsk(command)
 
-        return command.type.downlink
-    }
+                logger.debug {
+                    "Create PSK set command for key for device ${device.id} with revision ${newKey.revision} and status ${newKey.status}"
+                }
+
+                createPskSetCommand(device, newKey)
+            }
+            else -> command.type.downlink
+        }
 
     private fun getCurrentReadyPsk(command: Command) =
         pskService.getCurrentReadyPsk(command.deviceId)
             ?: throw NoExistingPskException("There is no new key ready to be set")
 
-    fun createPskCommand(newPreSharedKey: PreSharedKey): String {
+    fun createPskCommand(device: Device, newPreSharedKey: PreSharedKey): String {
         val newKey = newPreSharedKey.preSharedKey
-        val hash = DigestUtils.sha256Hex("${newPreSharedKey.secret}${newKey}")
+        val hash = DigestUtils.sha256Hex("${device.secret}${newKey}")
         return "PSK:${newKey}:${hash}"
     }
 
-    fun createPskSetCommand(newPreSharedKey: PreSharedKey): String {
+    fun createPskSetCommand(device: Device, newPreSharedKey: PreSharedKey): String {
         val newKey = newPreSharedKey.preSharedKey
-        val hash = DigestUtils.sha256Hex("${newPreSharedKey.secret}${newKey}")
+        val hash = DigestUtils.sha256Hex("${device.secret}${newKey}")
         return "PSK:${newKey}:${hash}:SET"
     }
 }

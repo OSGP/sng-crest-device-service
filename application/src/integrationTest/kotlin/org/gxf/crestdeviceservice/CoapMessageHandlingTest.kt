@@ -13,6 +13,8 @@ import org.awaitility.Awaitility
 import org.gxf.crestdeviceservice.IntegrationTestHelper.getFileContentAsString
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.repository.CommandRepository
+import org.gxf.crestdeviceservice.device.entity.Device
+import org.gxf.crestdeviceservice.device.repository.DeviceRepository
 import org.gxf.crestdeviceservice.psk.entity.PreSharedKey
 import org.gxf.crestdeviceservice.psk.entity.PreSharedKeyStatus
 import org.gxf.crestdeviceservice.psk.repository.PskRepository
@@ -45,6 +47,8 @@ class CoapMessageHandlingTest {
 
     @Autowired private lateinit var restTemplate: TestRestTemplate
 
+    @Autowired private lateinit var deviceRepository: DeviceRepository
+
     @Autowired private lateinit var pskRepository: PskRepository
 
     @Autowired private lateinit var commandRepository: CommandRepository
@@ -55,20 +59,20 @@ class CoapMessageHandlingTest {
 
     @BeforeEach
     fun setup() {
-        pskRepository.save(
-            PreSharedKey(DEVICE_ID, 0, Instant.MIN, PRE_SHARED_KEY_FIRST, SECRET, PreSharedKeyStatus.ACTIVE))
+        deviceRepository.save(Device(DEVICE_ID, SECRET))
+        pskRepository.save(PreSharedKey(DEVICE_ID, 0, Instant.MIN, PRE_SHARED_KEY_FIRST, PreSharedKeyStatus.ACTIVE))
     }
 
     @AfterEach
     fun cleanup() {
+        deviceRepository.deleteAll()
         pskRepository.deleteAll()
         commandRepository.deleteAll()
     }
 
     @Test
     fun shouldReturnADownLinkContainingPskCommands() {
-        pskRepository.save(
-            PreSharedKey(DEVICE_ID, 1, Instant.now(), PRE_SHARED_KEY_NEW, SECRET, PreSharedKeyStatus.READY))
+        pskRepository.save(PreSharedKey(DEVICE_ID, 1, Instant.now(), PRE_SHARED_KEY_NEW, PreSharedKeyStatus.READY))
         commandRepository.save(
             Command(
                 UUID.randomUUID(),
@@ -99,8 +103,7 @@ class CoapMessageHandlingTest {
     @Test
     fun shouldChangeActiveKey() {
         // pending psk, waiting for URC in next message from device
-        pskRepository.save(
-            PreSharedKey(DEVICE_ID, 1, Instant.now(), PRE_SHARED_KEY_NEW, SECRET, PreSharedKeyStatus.PENDING))
+        pskRepository.save(PreSharedKey(DEVICE_ID, 1, Instant.now(), PRE_SHARED_KEY_NEW, PreSharedKeyStatus.PENDING))
         commandRepository.save(
             Command(
                 UUID.randomUUID(),
@@ -136,8 +139,7 @@ class CoapMessageHandlingTest {
     @Test
     fun shouldSetPendingKeyAsInvalidWhenFailureURCReceived() {
         // pending psk, waiting for URC in next message from device
-        pskRepository.save(
-            PreSharedKey(DEVICE_ID, 1, Instant.MIN, PRE_SHARED_KEY_NEW, SECRET, PreSharedKeyStatus.PENDING))
+        pskRepository.save(PreSharedKey(DEVICE_ID, 1, Instant.MIN, PRE_SHARED_KEY_NEW, PreSharedKeyStatus.PENDING))
         commandRepository.save(
             Command(
                 UUID.randomUUID(),

@@ -6,6 +6,7 @@ package org.gxf.crestdeviceservice.consumer
 import com.alliander.sng.DeviceCredentials
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.service.CommandService
+import org.gxf.crestdeviceservice.device.service.DeviceService
 import org.gxf.crestdeviceservice.psk.service.PskDecryptionService
 import org.gxf.crestdeviceservice.psk.service.PskService
 import org.junit.jupiter.api.Test
@@ -16,11 +17,12 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class IncomingDeviceCredentialsConsumerTest {
+    private val deviceService = mock<DeviceService>()
     private val pskService = mock<PskService>()
     private val pskDecryptionService = mock<PskDecryptionService>()
     private val commandService = mock<CommandService>()
     private val incomingDeviceCredentialsConsumer =
-        IncomingDeviceCredentialsConsumer(pskService, pskDecryptionService, commandService)
+        IncomingDeviceCredentialsConsumer(deviceService, pskService, pskDecryptionService, commandService)
 
     @Test
     fun handleIncomingDeviceCredentialsChangeInitialPsk() {
@@ -38,7 +40,8 @@ class IncomingDeviceCredentialsConsumerTest {
 
         incomingDeviceCredentialsConsumer.handleIncomingDeviceCredentials(deviceCredentials)
 
-        verify(pskService).setInitialKeyForDevice(imei, decryptedPsk, decryptedSecret)
+        verify(deviceService).createDevice(imei, decryptedSecret)
+        verify(pskService).setInitialKeyForDevice(imei, decryptedPsk)
         verify(pskService).generateNewReadyKeyForDevice(imei)
         verify(commandService).saveCommandEntities(any<List<Command>>())
     }
@@ -59,7 +62,8 @@ class IncomingDeviceCredentialsConsumerTest {
 
         incomingDeviceCredentialsConsumer.handleIncomingDeviceCredentials(deviceCredentials)
 
-        verify(pskService).setInitialKeyForDevice(imei, decryptedPsk, decryptedSecret)
+        verify(deviceService).createDevice(imei, decryptedSecret)
+        verify(pskService).setInitialKeyForDevice(imei, decryptedPsk)
         verify(pskService, times(0)).generateNewReadyKeyForDevice(imei)
         verify(commandService, times(0)).saveCommandEntities(any<List<Command>>())
     }

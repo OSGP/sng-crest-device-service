@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright Contributors to the GXF project
 //
 // SPDX-License-Identifier: Apache-2.0
-package org.gxf.crestdeviceservice.psk.entity.convertors
+package org.gxf.crestdeviceservice.psk.shared.persistence
 
 import jakarta.persistence.AttributeConverter
 import java.nio.ByteBuffer
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class DatabaseFieldEncryptor : AttributeConverter<String, String> {
-
     companion object {
         private const val ENCRYPTION_METHOD = "AES/GCM/NoPadding"
         private const val ENCRYPTION_ALGORITHM = "AES"
@@ -41,7 +40,7 @@ class DatabaseFieldEncryptor : AttributeConverter<String, String> {
         val secureRandom = SecureRandom()
         secureRandom.nextBytes(iv)
         val cipher = Cipher.getInstance(ENCRYPTION_METHOD)
-        val parameterSpec = GCMParameterSpec(128, iv)
+        val parameterSpec = GCMParameterSpec(IV_SIZE * 8, iv)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec)
         val cipherText = cipher.doFinal(plaintext.toByteArray(StandardCharsets.UTF_8))
         val byteBuffer: ByteBuffer = ByteBuffer.allocate(iv.size + cipherText.size)
@@ -52,7 +51,7 @@ class DatabaseFieldEncryptor : AttributeConverter<String, String> {
 
     private fun decrypt(cipherMessage: ByteArray, secretKey: SecretKey): String {
         val cipher = Cipher.getInstance(ENCRYPTION_METHOD)
-        val gcmIv: AlgorithmParameterSpec = GCMParameterSpec(128, cipherMessage, 0, IV_SIZE)
+        val gcmIv: AlgorithmParameterSpec = GCMParameterSpec(IV_SIZE * 8, cipherMessage, 0, IV_SIZE)
         cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmIv)
         val plainText = cipher.doFinal(cipherMessage, IV_SIZE, cipherMessage.size - IV_SIZE)
         return String(plainText, StandardCharsets.UTF_8)

@@ -10,7 +10,7 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.IdClass
 import java.time.Instant
-import org.gxf.crestdeviceservice.psk.entity.convertors.DatabaseFieldEncryptor
+import org.gxf.crestdeviceservice.psk.shared.persistence.DatabaseFieldEncryptor
 
 @Entity
 @IdClass(PreSharedKeyCompositeKey::class)
@@ -19,6 +19,5 @@ class PreSharedKey(
     @Id val revision: Int,
     val revisionTime: Instant,
     @Convert(converter = DatabaseFieldEncryptor::class) val preSharedKey: String,
-    @Convert(converter = DatabaseFieldEncryptor::class) val secret: String,
     @Enumerated(EnumType.STRING) var status: PreSharedKeyStatus
 )

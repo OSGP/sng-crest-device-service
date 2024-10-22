@@ -10,6 +10,7 @@ import java.util.UUID
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.entity.Command.CommandStatus
 import org.gxf.crestdeviceservice.command.service.CommandService
+import org.gxf.crestdeviceservice.device.service.DeviceService
 import org.gxf.crestdeviceservice.psk.service.PskDecryptionService
 import org.gxf.crestdeviceservice.psk.service.PskService
 import org.springframework.kafka.annotation.KafkaListener
@@ -17,11 +18,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class IncomingDeviceCredentialsConsumer(
+    private val deviceService: DeviceService,
     private val pskService: PskService,
     private val pskDecryptionService: PskDecryptionService,
     private val commandService: CommandService
 ) {
-
     private val logger = KotlinLogging.logger {}
 
     @KafkaListener(id = "pre-shared-key", idIsGroup = false, topics = ["\${kafka.consumers.pre-shared-key.topic}"])
@@ -31,22 +32,19 @@ class IncomingDeviceCredentialsConsumer(
         val deviceId = deviceCredentials.imei
 
         try {
-            setInitialKey(deviceCredentials, deviceId)
+            val decryptedPsk = pskDecryptionService.decryptSecret(deviceCredentials.psk, deviceCredentials.keyRef)
+            val decryptedSecret = pskDecryptionService.decryptSecret(deviceCredentials.secret, deviceCredentials.keyRef)
+
+            deviceService.createDevice(deviceId, decryptedSecret)
+            pskService.setInitialKeyForDevice(deviceId, decryptedPsk)
 
             if (pskService.changeInitialPsk()) {
                 pskService.generateNewReadyKeyForDevice(deviceId)
                 preparePskCommands(deviceId)
             }
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to set device credentials for $deviceId" }
+        } catch (exception: Exception) {
+            logger.error(exception) { "Failed to set device credentials for $deviceId" }
         }
-    }
-
-    private fun setInitialKey(deviceCredentials: DeviceCredentials, deviceId: String) {
-        val decryptedPsk = pskDecryptionService.decryptSecret(deviceCredentials.psk, deviceCredentials.keyRef)
-        val decryptedSecret = pskDecryptionService.decryptSecret(deviceCredentials.secret, deviceCredentials.keyRef)
-
-        pskService.setInitialKeyForDevice(deviceId, decryptedPsk, decryptedSecret)
     }
 
     private fun preparePskCommands(deviceId: String) {
