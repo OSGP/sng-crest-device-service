@@ -5,6 +5,7 @@ package org.gxf.crestdeviceservice.command.service
 
 import java.time.Instant
 import java.util.UUID
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gxf.crestdeviceservice.CommandFactory
 import org.gxf.crestdeviceservice.command.entity.Command
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -27,7 +28,7 @@ class CommandServiceTest {
     @Test
     fun validateSucceeded() {
         whenever(commandRepository.findFirstByDeviceIdAndTypeOrderByTimestampIssuedDesc(any(), any()))
-            .thenReturn(CommandFactory.pendingRebootCommand().copy(timestampIssued = Instant.now().minusSeconds(100)))
+            .thenReturn(CommandFactory.pendingRebootCommand(Instant.now().minusSeconds(100)))
 
         assertDoesNotThrow { commandService.validate(CommandFactory.pendingRebootCommand()) }
     }
@@ -37,7 +38,7 @@ class CommandServiceTest {
         val exceptionExpected = CommandValidationException("There is a newer command of the same type")
 
         whenever(commandRepository.findFirstByDeviceIdAndTypeOrderByTimestampIssuedDesc(any(), any()))
-            .thenReturn(CommandFactory.pendingRebootCommand().copy(timestampIssued = Instant.now().plusSeconds(100)))
+            .thenReturn(CommandFactory.pendingRebootCommand(Instant.now().plusSeconds(100)))
 
         assertThatThrownBy { commandService.validate(CommandFactory.pendingRebootCommand()) }
             .usingRecursiveComparison()
@@ -59,17 +60,18 @@ class CommandServiceTest {
     fun `Check if existing pending same command is cancelled if it exists`() {
         val newCommand = CommandFactory.pendingRebootCommand()
         val existingPendingCommand =
-            newCommand.copy(timestampIssued = Instant.now().minusSeconds(100), correlationId = UUID.randomUUID())
-        val cancelledCommand = existingPendingCommand.copy(status = Command.CommandStatus.CANCELLED)
+            CommandFactory.pendingRebootCommand(
+                timestampIssued = Instant.now().minusSeconds(100), correlationId = UUID.randomUUID())
 
         whenever(commandRepository.findFirstByDeviceIdAndTypeOrderByTimestampIssuedDesc(any(), any()))
             .thenReturn(existingPendingCommand)
-        whenever(commandRepository.save(any<Command>())).thenReturn(cancelledCommand)
+        whenever(commandRepository.save(any<Command>())).thenReturn(existingPendingCommand)
 
         commandService.cancelOlderCommandIfNecessary(newCommand)
 
         verify(commandFeedbackService).sendCancellationFeedback(eq(existingPendingCommand), any<String>())
-        verify(commandRepository).save(cancelledCommand)
+        verify(commandRepository).save(existingPendingCommand)
+        assertThat(existingPendingCommand.status).isEqualTo(Command.CommandStatus.CANCELLED)
     }
 
     @Test
@@ -79,6 +81,6 @@ class CommandServiceTest {
 
         commandService.cancelOlderCommandIfNecessary(newCommand)
 
-        verify(commandFeedbackService, times(0)).sendCancellationFeedback(any<Command>(), any<String>())
+        verify(commandFeedbackService, never()).sendCancellationFeedback(any<Command>(), any<String>())
     }
 }

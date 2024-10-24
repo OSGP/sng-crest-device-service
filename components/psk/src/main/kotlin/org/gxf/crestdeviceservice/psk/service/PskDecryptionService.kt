@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.psk.service
 
-import java.util.*
+import java.util.Base64
 import javax.crypto.Cipher
 import org.gxf.crestdeviceservice.psk.configuration.PskDecryptionConfiguration
 import org.gxf.crestdeviceservice.psk.exception.UnknownKeyRefException

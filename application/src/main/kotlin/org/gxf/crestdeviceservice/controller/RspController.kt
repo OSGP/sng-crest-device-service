@@ -34,7 +34,7 @@ class RspController(private val commandService: CommandService) {
     private fun saveRspCommand(deviceId: String, commandType: Command.CommandType) {
         logger.info { "received $commandType command for device '$deviceId'" }
 
-        commandService.save(
+        commandService.saveCommand(
             Command(
                 id = UUID.randomUUID(),
                 deviceId = deviceId,

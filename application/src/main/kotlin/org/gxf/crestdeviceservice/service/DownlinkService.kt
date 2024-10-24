@@ -3,40 +3,42 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.transaction.Transactional
-import org.apache.commons.codec.digest.DigestUtils
 import org.gxf.crestdeviceservice.command.entity.Command
+import org.gxf.crestdeviceservice.command.generator.CommandGenerator
 import org.gxf.crestdeviceservice.command.service.CommandService
 import org.gxf.crestdeviceservice.config.MessageProperties
 import org.gxf.crestdeviceservice.model.Downlink
-import org.gxf.crestdeviceservice.psk.entity.PreSharedKey
 import org.gxf.crestdeviceservice.psk.exception.NoExistingPskException
 import org.gxf.crestdeviceservice.psk.service.PskService
 import org.springframework.stereotype.Service
 
+/** Creates downlinks to be sent to a device after it makes contact. */
 @Service
 class DownlinkService(
     private val pskService: PskService,
     private val commandService: CommandService,
-    private val messageProperties: MessageProperties
+    private val messageProperties: MessageProperties,
+    commandGenerators: List<CommandGenerator>
 ) {
-    companion object {
-        private const val RESPONSE_SUCCESS = "0"
-    }
 
     private val logger = KotlinLogging.logger {}
 
+    private val commandGenerators = commandGenerators.associateBy { it.getSupportedCommand() }
+
+    fun createDownlink() = Downlink(messageProperties.maxBytes)
+
     @Transactional
     @Throws(NoExistingPskException::class)
-    fun getDownlinkForDevice(deviceId: String, body: JsonNode): String {
+    fun getDownlinkForDevice(deviceId: String, downlink: Downlink): String {
+        logger.info { "Gathering pending commands for device $deviceId" }
         val pendingCommands = commandService.getAllPendingCommandsForDevice(deviceId)
         val commandsToSend = getCommandsToSend(pendingCommands)
         if (commandsToSend.isNotEmpty()) {
-            return getDownlinkFromCommands(deviceId, commandsToSend)
+            downlink.fillFromCommands(commandsToSend)
         }
-        return RESPONSE_SUCCESS
+        return downlink.getDownlink()
     }
 
     private fun getCommandsToSend(pendingCommands: List<Command>) =
@@ -48,19 +50,15 @@ class DownlinkService(
             else -> true
         }
 
-    private fun getDownlinkFromCommands(deviceId: String, pendingCommands: List<Command>): String {
-        logger.info { "Device $deviceId has pending commands of types: ${getPrintableCommandTypes(pendingCommands)}." }
+    private fun Downlink.fillFromCommands(pendingCommands: List<Command>) {
+        logger.info { "Device has pending commands of types: ${getPrintableCommandTypes(pendingCommands)}." }
 
-        val downlink = Downlink(messageProperties.maxBytes)
-
-        val commandsToSend = pendingCommands.filter { command -> downlink.addIfItFits(getDownlinkPerCommand(command)) }
-
+        val commandsToSend = pendingCommands.filter { command -> addIfPossible(getDownlinkPerCommand(command)) }
         logger.info { "Commands that will be sent: ${getPrintableCommandTypes(commandsToSend)}." }
+
         commandsToSend.forEach { command -> setCommandInProgress(command) }
 
-        val completeDownlink = downlink.downlink
-        logger.debug { "Downlink that will be sent: $completeDownlink" }
-        return completeDownlink
+        logger.debug { "Downlink that will be sent: ${getDownlink()}" }
     }
 
     private fun getPrintableCommandTypes(commands: List<Command>) =
@@ -72,39 +70,9 @@ class DownlinkService(
             logger.info { "Device $deviceId needs key change" }
             pskService.setPskToPendingForDevice(deviceId)
         }
-        commandService.saveCommandWithNewStatus(command, Command.CommandStatus.IN_PROGRESS)
+        commandService.saveCommand(command.start())
     }
 
-    private fun getDownlinkPerCommand(command: Command): String {
-        if (command.type == Command.CommandType.PSK) {
-            val newKey = getCurrentReadyPsk(command)
-
-            return createPskCommand(newKey)
-        }
-        if (command.type == Command.CommandType.PSK_SET) {
-            val newKey = getCurrentReadyPsk(command)
-            logger.debug {
-                "Create PSK set command for key for device ${newKey.identity} with revision ${newKey.revision} and status ${newKey.status}"
-            }
-            return createPskSetCommand(newKey)
-        }
-
-        return command.type.downlink
-    }
-
-    private fun getCurrentReadyPsk(command: Command) =
-        pskService.getCurrentReadyPsk(command.deviceId)
-            ?: throw NoExistingPskException("There is no new key ready to be set")
-
-    fun createPskCommand(newPreSharedKey: PreSharedKey): String {
-        val newKey = newPreSharedKey.preSharedKey
-        val hash = DigestUtils.sha256Hex("${newPreSharedKey.secret}${newKey}")
-        return "PSK:${newKey}:${hash}"
-    }
-
-    fun createPskSetCommand(newPreSharedKey: PreSharedKey): String {
-        val newKey = newPreSharedKey.preSharedKey
-        val hash = DigestUtils.sha256Hex("${newPreSharedKey.secret}${newKey}")
-        return "PSK:${newKey}:${hash}:SET"
-    }
+    private fun getDownlinkPerCommand(command: Command) =
+        commandGenerators[command.type]?.generateCommandString(command) ?: command.type.downlink
 }

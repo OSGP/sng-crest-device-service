@@ -1,0 +1,7 @@
+The implementation in this folder was derived from https://github.com/Sheep-y/Base85 by https://github.com/Sheep-y.
+The original license remains: Apache License v2.0 (see the license file in this folder)
+
+We used the Java implementation (the class `Base85`) and modified the code in a few areas:
+- removed Base85 variants we don't use (Ascii85, Z85) leaving only the RFC-1924 implementation
+- fixed the unit tests accordingly
+- refactored the remaining unit tests to use JUnit 5

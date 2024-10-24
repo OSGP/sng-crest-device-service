@@ -13,8 +13,8 @@ import org.gxf.crestdeviceservice.psk.service.PskService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.refEq
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -36,7 +36,7 @@ class CommandConsumerTest {
         verify(commandService).validate(refEq(command, "id", "timestampIssued"))
         verify(commandFeedbackService).sendReceivedFeedback(refEq(command, "id", "timestampIssued"))
         verify(commandService).cancelOlderCommandIfNecessary(refEq(command, "id", "timestampIssued"))
-        verify(commandService).save(refEq(command, "id", "timestampIssued"))
+        verify(commandService).saveCommand(refEq(command, "id", "timestampIssued"))
     }
 
     @Test
@@ -49,7 +49,7 @@ class CommandConsumerTest {
         verify(commandFeedbackService).sendReceivedFeedback(refEq(command, "id", "timestampIssued"))
         verify(commandService).cancelOlderCommandIfNecessary(refEq(command, "id", "timestampIssued"))
         verify(pskService).generateNewReadyKeyForDevice(command.deviceId)
-        verify(commandService).save(refEq(command, "id", "timestampIssued"))
+        verify(commandService).saveCommand(refEq(command, "id", "timestampIssued"))
     }
 
     @Test
@@ -71,7 +71,7 @@ class CommandConsumerTest {
         commandConsumer.handleIncomingCommand(externalCommand)
 
         verify(commandFeedbackService).sendRejectionFeedback(reason, externalCommand)
-        verify(commandFeedbackService, times(0)).sendReceivedFeedback(any<Command>())
-        verify(commandService, times(0)).save(any<Command>())
+        verify(commandFeedbackService, never()).sendReceivedFeedback(any<Command>())
+        verify(commandService, never()).saveCommand(any<Command>())
     }
 }

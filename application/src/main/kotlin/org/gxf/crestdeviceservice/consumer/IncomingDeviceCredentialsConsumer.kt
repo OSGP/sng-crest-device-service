@@ -72,6 +72,6 @@ class IncomingDeviceCredentialsConsumer(
                 commandValue = null,
             )
 
-        commandService.saveCommandEntities(listOf(pskCommand, pskSetCommand))
+        commandService.saveCommands(pskCommand, pskSetCommand)
     }
 }

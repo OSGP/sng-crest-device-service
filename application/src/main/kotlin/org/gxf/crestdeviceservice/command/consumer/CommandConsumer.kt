@@ -39,7 +39,7 @@ class CommandConsumer(
                 pskService.generateNewReadyKeyForDevice(externalCommand.deviceId)
             }
 
-            commandService.save(pendingCommand)
+            commandService.saveCommand(pendingCommand)
         } catch (exception: CommandValidationException) {
             val reason = exception.message ?: ""
             logger.warn {

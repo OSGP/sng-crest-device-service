@@ -11,7 +11,7 @@ import org.gxf.crestdeviceservice.psk.service.PskService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -40,7 +40,7 @@ class IncomingDeviceCredentialsConsumerTest {
 
         verify(pskService).setInitialKeyForDevice(imei, decryptedPsk, decryptedSecret)
         verify(pskService).generateNewReadyKeyForDevice(imei)
-        verify(commandService).saveCommandEntities(any<List<Command>>())
+        verify(commandService).saveCommands(any<Command>(), any<Command>())
     }
 
     @Test
@@ -60,7 +60,7 @@ class IncomingDeviceCredentialsConsumerTest {
         incomingDeviceCredentialsConsumer.handleIncomingDeviceCredentials(deviceCredentials)
 
         verify(pskService).setInitialKeyForDevice(imei, decryptedPsk, decryptedSecret)
-        verify(pskService, times(0)).generateNewReadyKeyForDevice(imei)
-        verify(commandService, times(0)).saveCommandEntities(any<List<Command>>())
+        verify(pskService, never()).generateNewReadyKeyForDevice(imei)
+        verify(commandService, never()).saveCommand(any<Command>())
     }
 }

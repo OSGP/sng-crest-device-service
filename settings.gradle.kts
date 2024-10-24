@@ -7,6 +7,7 @@ rootProject.name = "sng-crest-device-service"
 include("application")
 include("components:psk")
 include("components:firmware")
+include("components:base85")
 
 dependencyResolutionManagement {
     versionCatalogs {

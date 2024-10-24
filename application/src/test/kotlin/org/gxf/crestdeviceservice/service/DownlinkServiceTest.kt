@@ -3,56 +3,86 @@
 // SPDX-License-Identifier: Apache-2.0
 package org.gxf.crestdeviceservice.service
 
-import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.gxf.crestdeviceservice.CommandFactory
 import org.gxf.crestdeviceservice.TestConstants
-import org.gxf.crestdeviceservice.TestHelper
 import org.gxf.crestdeviceservice.command.entity.Command
+import org.gxf.crestdeviceservice.command.generator.CommandGenerator
 import org.gxf.crestdeviceservice.command.service.CommandService
 import org.gxf.crestdeviceservice.config.MessageProperties
-import org.gxf.crestdeviceservice.psk.entity.PreSharedKey
-import org.gxf.crestdeviceservice.psk.entity.PreSharedKeyStatus
+import org.gxf.crestdeviceservice.model.Downlink
 import org.gxf.crestdeviceservice.psk.service.PskService
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class DownlinkServiceTest {
     private val pskService = mock<PskService>()
     private val commandService = mock<CommandService>()
     private val messageProperties = MessageProperties(1024)
-    private val downlinkService = DownlinkService(pskService, commandService, messageProperties)
-    private val message = TestHelper.messageTemplate()
+    private val pskCommandGenerator = mock<CommandGenerator>()
+    private val pskSetCommandGenerator = mock<CommandGenerator>()
+    private lateinit var downlinkService: DownlinkService
     private val deviceId = TestConstants.DEVICE_ID
+
+    private val pskCommandString = "this-is-the-generated-PSK-command"
+    private val pskSetCommandString = "this-is-the-generated-PSK:SET-command"
+
+    @BeforeEach
+    fun setUp() {
+        whenever(pskCommandGenerator.getSupportedCommand()).thenReturn(Command.CommandType.PSK)
+        whenever(pskCommandGenerator.generateCommandString(any())).thenReturn(pskCommandString)
+        whenever(pskSetCommandGenerator.getSupportedCommand()).thenReturn(Command.CommandType.PSK_SET)
+        whenever(pskSetCommandGenerator.generateCommandString(any())).thenReturn(pskSetCommandString)
+
+        this.downlinkService =
+            DownlinkService(
+                pskService, commandService, messageProperties, listOf(pskCommandGenerator, pskSetCommandGenerator))
+    }
+
+    @Test
+    fun shouldUseGeneratorWhenAvailableForCommand() {
+        val pskCommandPending = CommandFactory.pendingPskCommand()
+        whenever(commandService.getAllPendingCommandsForDevice(deviceId)).thenReturn(listOf(pskCommandPending))
+        whenever(pskService.readyForPskSetCommand(deviceId)).thenReturn(true)
+
+        val downlink = downlinkService.getDownlinkForDevice(deviceId, Downlink())
+
+        verify(pskCommandGenerator).generateCommandString(pskCommandPending)
+        assertThat(downlink).isEqualTo("!$pskCommandString")
+    }
+
+    @Test
+    fun shouldUseCommandTypeDownlinkWhenGeneratorIsNotAvailable() {
+        val rebootCommandPending = CommandFactory.pendingRebootCommand()
+        whenever(commandService.getAllPendingCommandsForDevice(deviceId)).thenReturn(listOf(rebootCommandPending))
+
+        val downlink = downlinkService.getDownlinkForDevice(deviceId, Downlink())
+
+        verify(pskCommandGenerator, never()).generateCommandString(rebootCommandPending)
+        assertThat(downlink).isEqualTo("!${Command.CommandType.REBOOT.downlink}")
+    }
 
     @Test
     fun shouldReturnPskDownlinkWhenThereIsANewPsk() {
-        val expectedKey = "key"
-        val expectedHash = "ad165b11320bc91501ab08613cc3a48a62a6caca4d5c8b14ca82cc313b3b96cd"
-        val pskReady = PreSharedKey(deviceId, 1, Instant.now(), expectedKey, "secret", PreSharedKeyStatus.READY)
-        val pskPending = PreSharedKey(deviceId, 1, Instant.now(), expectedKey, "secret", PreSharedKeyStatus.PENDING)
-        val pskCommandPending = CommandFactory.pendingPskCommand()
-        val pskSetCommandPending = CommandFactory.pendingPskSetCommand()
-        val pskCommandsPending = listOf(pskCommandPending, pskSetCommandPending)
-        val pskCommandInProgress = pskCommandPending.copy(status = Command.CommandStatus.IN_PROGRESS)
-        val pskSetCommandInProgress = pskSetCommandPending.copy(status = Command.CommandStatus.IN_PROGRESS)
+        val pskCommand = CommandFactory.pendingPskCommand()
+        val pskSetCommand = CommandFactory.pendingPskSetCommand()
+        val pskCommandsPending = listOf(pskCommand, pskSetCommand)
 
         whenever(commandService.getAllPendingCommandsForDevice(deviceId)).thenReturn(pskCommandsPending)
         whenever(pskService.readyForPskSetCommand(deviceId)).thenReturn(true)
-        whenever(commandService.saveCommandWithNewStatus(pskCommandPending, Command.CommandStatus.IN_PROGRESS))
-            .thenReturn(pskCommandInProgress)
-        whenever(pskService.getCurrentReadyPsk(deviceId)).thenReturn(pskReady)
-        whenever(commandService.saveCommandWithNewStatus(pskSetCommandPending, Command.CommandStatus.IN_PROGRESS))
-            .thenReturn(pskSetCommandInProgress)
-        whenever(pskService.setPskToPendingForDevice(deviceId)).thenReturn(pskPending)
+        whenever(commandService.saveCommand(pskCommand)).thenReturn(pskCommand)
+        whenever(commandService.saveCommand(pskSetCommand)).thenReturn(pskSetCommand)
 
-        val result = downlinkService.getDownlinkForDevice(deviceId, message)
+        val result = downlinkService.getDownlinkForDevice(deviceId, Downlink())
 
-        // Psk command is formatted as: PSK:[Key]:[Hash];PSK:[Key]:[Hash]:SET
-        assertThat(result).isEqualTo("!PSK:${expectedKey}:${expectedHash};PSK:${expectedKey}:${expectedHash}:SET")
+        assertThat(result).isEqualTo("!$pskCommandString;$pskSetCommandString")
+        assertThat(pskCommand.status).isEqualTo(Command.CommandStatus.IN_PROGRESS)
+        assertThat(pskSetCommand.status).isEqualTo(Command.CommandStatus.IN_PROGRESS)
     }
 
     @Test
@@ -62,10 +92,9 @@ class DownlinkServiceTest {
         whenever(pskService.readyForPskSetCommand(deviceId)).thenReturn(false)
         whenever(commandService.getAllPendingCommandsForDevice(deviceId)).thenReturn(pendingCommands)
         whenever(commandService.getFirstCommandInProgressForDevice(deviceId)).thenReturn(null)
-        whenever(commandService.saveCommandWithNewStatus(rebootCommand, Command.CommandStatus.IN_PROGRESS))
-            .thenReturn(rebootCommand.copy(status = Command.CommandStatus.IN_PROGRESS))
+        whenever(commandService.saveCommand(rebootCommand)).thenReturn(rebootCommand)
 
-        val result = downlinkService.getDownlinkForDevice(deviceId, message)
+        val result = downlinkService.getDownlinkForDevice(deviceId, Downlink())
 
         val expectedDownlink = "!CMD:REBOOT"
         assertThat(result).isEqualTo(expectedDownlink)
@@ -78,7 +107,7 @@ class DownlinkServiceTest {
         whenever(commandService.getFirstCommandInProgressForDevice(deviceId))
             .thenReturn(CommandFactory.rebootCommandInProgress())
 
-        val result = downlinkService.getDownlinkForDevice(deviceId, message)
+        val result = downlinkService.getDownlinkForDevice(deviceId, Downlink())
 
         assertThat(result).isEqualTo("0")
     }
@@ -87,23 +116,8 @@ class DownlinkServiceTest {
     fun shouldReturnNoActionDownlinkWhenThereIsNoNewPskOrPendingCommand() {
         whenever(pskService.readyForPskSetCommand(deviceId)).thenReturn(false)
 
-        val result = downlinkService.getDownlinkForDevice(deviceId, message)
+        val result = downlinkService.getDownlinkForDevice(deviceId, Downlink())
 
         assertThat(result).isEqualTo("0")
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "1234567890123456,ce2eca02d7ce354830eae7dd3b140755334f9c00582a53044655adde22126071,secret",
-        "1234567890123456,78383f73855e7595f8d31ee7cabdf854bc4e70d036f225f8d144d566083c7d01,different-secret",
-        "6543210987654321,5e15cf0f8a55b58a54f51dda17c1d1645ebc145f912888ec2e02a55d7b7baea4,secret",
-        "6543210987654321,64904d94590a354cecd8e65630289bcc22103c07b08c009b0b12a8ef0d58af9d,different-secret")
-    fun shouldCreateACorrectPskSetCommandWithHash(key: String, expectedHash: String, usedSecret: String) {
-        val preSharedKey = PreSharedKey("identity", 0, Instant.now(), key, usedSecret, PreSharedKeyStatus.PENDING)
-
-        val result = downlinkService.createPskSetCommand(preSharedKey)
-
-        // PSK:[Key]:[Hash]:SET
-        assertThat(result).isEqualTo("PSK:${key}:${expectedHash}:SET")
     }
 }

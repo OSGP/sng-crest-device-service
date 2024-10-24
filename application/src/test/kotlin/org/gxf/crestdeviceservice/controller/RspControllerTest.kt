@@ -33,7 +33,7 @@ class RspControllerTest {
             .perform(post("/test/{deviceId}/rsp", DEVICE_ID)) //
             .andExpect(status().isOk)
 
-        verify(commandService).save(capture(commandCaptor))
+        verify(commandService).saveCommand(capture(commandCaptor))
 
         val command = commandCaptor.value
         assertThat(command.deviceId).isEqualTo(DEVICE_ID)
@@ -47,7 +47,7 @@ class RspControllerTest {
             .perform(post("/test/{deviceId}/rsp2", DEVICE_ID)) //
             .andExpect(status().isOk)
 
-        verify(commandService).save(capture(commandCaptor))
+        verify(commandService).saveCommand(capture(commandCaptor))
 
         val command = commandCaptor.value
         assertThat(command.deviceId).isEqualTo(DEVICE_ID)
