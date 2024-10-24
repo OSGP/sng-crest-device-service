@@ -24,9 +24,6 @@ server:
   port: 9000
 
 config:
-  http:
-#    url: "http://localhost:9001"
-#    connection-timeout: "5000ms"
   # port for web client
   web-server:
     port: 9001
