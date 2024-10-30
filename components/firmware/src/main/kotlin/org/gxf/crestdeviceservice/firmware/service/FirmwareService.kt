@@ -42,6 +42,8 @@ class FirmwareService(
     fun findFirmwareByName(name: String) =
         checkNotNull(firmwareRepository.findByName(name)) { "Firmware with name $name not found" }
 
+    fun countFirmwarePacketsByName(name: String) = findFirmwareByName(name).packets.size
+
     /**
      * Gets a ready-to-go firmware packet for a device. If required, the firmware hashes in the packet are replaced with
      * device-specific hashes for validation.

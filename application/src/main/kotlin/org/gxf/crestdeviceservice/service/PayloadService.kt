@@ -6,6 +6,7 @@ package org.gxf.crestdeviceservice.service
 import com.fasterxml.jackson.databind.JsonNode
 import org.gxf.crestdeviceservice.command.entity.Command
 import org.gxf.crestdeviceservice.command.exception.NoMatchingCommandException
+import org.gxf.crestdeviceservice.command.service.CommandFeedbackService
 import org.gxf.crestdeviceservice.command.service.CommandService
 import org.gxf.crestdeviceservice.firmware.service.FirmwareService
 import org.gxf.crestdeviceservice.model.DeviceMessage
@@ -17,6 +18,7 @@ class PayloadService(
     private val urcService: UrcService,
     private val firmwareService: FirmwareService,
     private val commandService: CommandService,
+    private val commandFeedbackService: CommandFeedbackService,
 ) {
     /**
      * Process the payload. This includes
@@ -30,26 +32,44 @@ class PayloadService(
     fun processPayload(identity: String, body: JsonNode, downlink: Downlink) {
         urcService.interpretUrcsInMessage(identity, body)
 
-        addFirmwareCommandIfRequested(DeviceMessage(body), identity, downlink)
+        val deviceMessage = DeviceMessage(body)
+
+        addFirmwareCommandIfRequested(deviceMessage, identity, downlink)?.let { firmware ->
+            sendProgress(deviceMessage, firmware)
+        }
     }
 
-    private fun addFirmwareCommandIfRequested(deviceMessage: DeviceMessage, identity: String, downlink: Downlink) {
-        val fotaMessageCounter = deviceMessage.getFotaMessageCounter()
-        if (fotaMessageCounter > 0) {
-            val firmwareCommand =
-                commandService.getAllCommandsInProgressForDevice(identity).find {
-                    it.type == Command.CommandType.FIRMWARE
-                }
+    private fun addFirmwareCommandIfRequested(
+        deviceMessage: DeviceMessage,
+        identity: String,
+        downlink: Downlink
+    ): Command? =
+        deviceMessage
+            .getFotaMessageCounter()
+            .takeIf { it > 0 }
+            ?.let { fotaMessageCounter ->
+                val firmwareCommand =
+                    commandService.getAllCommandsInProgressForDevice(identity).find {
+                        it.type == Command.CommandType.FIRMWARE
+                    }
 
-            if (firmwareCommand != null) {
-                val firmware = firmwareService.findFirmwareByName(firmwareCommand.getRequiredCommandValue())
-                val otaCommand = firmwareService.getPacketForDevice(firmware, fotaMessageCounter, identity)
-                downlink.addIfPossible(otaCommand)
-            } else {
-                throw NoMatchingCommandException(
-                    "Device $identity requests FOTA packet $fotaMessageCounter (FMC), but no running FIRMWARE command was found"
-                )
+                if (firmwareCommand != null) {
+                    val firmware = firmwareService.findFirmwareByName(firmwareCommand.getRequiredCommandValue())
+                    val otaCommand = firmwareService.getPacketForDevice(firmware, fotaMessageCounter, identity)
+                    downlink.addIfPossible(otaCommand)
+
+                    firmwareCommand
+                } else {
+                    throw NoMatchingCommandException(
+                        "Device $identity requests FOTA packet $fotaMessageCounter (FMC), but no running FIRMWARE command was found"
+                    )
+                }
             }
-        }
+
+    private fun sendProgress(deviceMessage: DeviceMessage, firmwareCommand: Command) {
+        val packet = deviceMessage.getFotaMessageCounter()
+        val packetCount = firmwareService.countFirmwarePacketsByName(firmwareCommand.getRequiredCommandValue())
+
+        commandFeedbackService.sendProgressFeedback(packet, packetCount, firmwareCommand)
     }
 }

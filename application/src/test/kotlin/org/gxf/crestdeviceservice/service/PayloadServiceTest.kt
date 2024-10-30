@@ -9,6 +9,7 @@ import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.gxf.crestdeviceservice.CommandFactory
 import org.gxf.crestdeviceservice.TestHelper
+import org.gxf.crestdeviceservice.command.service.CommandFeedbackService
 import org.gxf.crestdeviceservice.command.service.CommandService
 import org.gxf.crestdeviceservice.firmware.entity.Firmware
 import org.gxf.crestdeviceservice.firmware.service.FirmwareService
@@ -30,6 +31,7 @@ class PayloadServiceTest {
     @Mock private lateinit var urcService: UrcService
     @Mock private lateinit var firmwareService: FirmwareService
     @Mock private lateinit var commandService: CommandService
+    @Mock private lateinit var commandFeedbackService: CommandFeedbackService
 
     private val mapper = ObjectMapper()
 
@@ -47,6 +49,7 @@ class PayloadServiceTest {
     @Test
     fun shouldSupplyOtaCommandForFmc() {
         val packetNumber = 3
+        val packetCount = 20
         val message = TestHelper.messageTemplate()
         message.set<JsonNode>(DeviceMessage.FMC_FIELD, mapper.readTree(packetNumber.toString()))
         val downlink = Downlink()
@@ -59,10 +62,13 @@ class PayloadServiceTest {
         whenever(commandService.getAllCommandsInProgressForDevice(deviceId)).thenReturn(listOf(firmwareCommand))
         whenever(firmwareService.findFirmwareByName(firmwareName)).thenReturn(firmware)
         whenever(firmwareService.getPacketForDevice(firmware, packetNumber, deviceId)).thenReturn(otaCommand)
+        whenever(firmwareService.countFirmwarePacketsByName(firmwareName)).thenReturn(packetCount)
 
         payloadService.processPayload(deviceId, message, downlink)
 
         verify(urcService, times(1)).interpretUrcsInMessage(deviceId, message)
         assertThat(downlink.getDownlink()).contains(otaCommand)
+
+        verify(commandFeedbackService).sendProgressFeedback(packetNumber, packetCount, firmwareCommand)
     }
 }

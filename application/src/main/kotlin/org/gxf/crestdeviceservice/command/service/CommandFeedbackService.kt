@@ -8,8 +8,8 @@ import com.alliander.sng.CommandFeedback
 import com.alliander.sng.CommandStatus
 import org.apache.avro.specific.SpecificRecordBase
 import org.gxf.crestdeviceservice.command.entity.Command
-import org.gxf.crestdeviceservice.command.mapper.CommandFeedbackMapper
 import org.gxf.crestdeviceservice.command.mapper.CommandFeedbackMapper.commandEntityToCommandFeedback
+import org.gxf.crestdeviceservice.command.mapper.CommandFeedbackMapper.externalCommandToCommandFeedback
 import org.gxf.crestdeviceservice.config.KafkaProducerProperties
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
@@ -23,17 +23,25 @@ class CommandFeedbackService(
 
     fun sendReceivedFeedback(command: Command) {
         val commandFeedback = commandEntityToCommandFeedback(command, CommandStatus.Received, "Command received")
+
         sendFeedback(commandFeedback)
     }
 
     fun sendCancellationFeedback(command: Command, message: String) {
         val commandFeedback = commandEntityToCommandFeedback(command, CommandStatus.Cancelled, message)
+
         sendFeedback(commandFeedback)
     }
 
     fun sendRejectionFeedback(reason: String, command: ExternalCommand) {
-        val commandFeedback =
-            CommandFeedbackMapper.externalCommandToCommandFeedback(command, CommandStatus.Rejected, reason)
+        val commandFeedback = externalCommandToCommandFeedback(command, CommandStatus.Rejected, reason)
+
+        sendFeedback(commandFeedback)
+    }
+
+    fun sendProgressFeedback(index: Int, count: Int, command: Command) {
+        val commandFeedback = commandEntityToCommandFeedback(command, CommandStatus.Progress, "$index/$count")
+
         sendFeedback(commandFeedback)
     }
 
