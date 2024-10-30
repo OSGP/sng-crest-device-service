@@ -74,10 +74,8 @@ class FirmwareServiceTest {
 
         val firmware = Firmware(id = UUID.randomUUID(), name = firmwareName, version = "1", packets = mutableListOf())
 
-        (1..packetCount).forEach { packetNumber ->
-            val packet = FirmwarePacket(firmware, packetNumber, "packet $packetNumber")
-
-            firmware.packets += packet
+        repeat(packetCount) { packetNumber ->
+            firmware.packets += FirmwarePacket(firmware, packetNumber, "packet $packetNumber")
         }
 
         whenever(firmwareRepository.findByName(firmwareName)).thenReturn(firmware)

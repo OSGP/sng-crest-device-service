@@ -67,7 +67,7 @@ class PayloadService(
             }
 
     private fun sendProgress(deviceMessage: DeviceMessage, firmwareCommand: Command) {
-        val packet = deviceMessage.getFotaMessageCounter()
+        val packet = deviceMessage.getFotaMessageCounter() + 1
         val packetCount = firmwareService.countFirmwarePacketsByName(firmwareCommand.getRequiredCommandValue())
 
         commandFeedbackService.sendProgressFeedback(packet, packetCount, firmwareCommand)

@@ -26,6 +26,8 @@ import org.springframework.kafka.core.KafkaTemplate
 
 @ExtendWith(MockitoExtension::class)
 class CommandFeedbackServiceTest {
+    private val topic = "topic"
+
     @Mock private lateinit var kafkaTemplate: KafkaTemplate<String, SpecificRecordBase>
     @Mock(answer = Answers.RETURNS_DEEP_STUBS) private lateinit var kafkaProducerProperties: KafkaProducerProperties
 
@@ -35,7 +37,7 @@ class CommandFeedbackServiceTest {
 
     @BeforeEach
     fun createService() {
-        whenever(kafkaProducerProperties.commandFeedback.topic).thenReturn("topic")
+        whenever(kafkaProducerProperties.commandFeedback.topic).thenReturn(topic)
 
         service = CommandFeedbackService(kafkaTemplate, kafkaProducerProperties)
     }
@@ -44,7 +46,7 @@ class CommandFeedbackServiceTest {
     fun `should send progress`() {
         service.sendProgressFeedback(2, 5, firmwareCommandInProgress())
 
-        verify(kafkaTemplate).send(eq("topic"), eq(DEVICE_ID), capture(feedbackCaptor))
+        verify(kafkaTemplate).send(eq(topic), eq(DEVICE_ID), capture(feedbackCaptor))
 
         val feedback = feedbackCaptor.value
         assertThat(feedback.deviceId).isEqualTo(DEVICE_ID)

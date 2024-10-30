@@ -69,6 +69,6 @@ class PayloadServiceTest {
         verify(urcService, times(1)).interpretUrcsInMessage(deviceId, message)
         assertThat(downlink.getDownlink()).contains(otaCommand)
 
-        verify(commandFeedbackService).sendProgressFeedback(packetNumber, packetCount, firmwareCommand)
+        verify(commandFeedbackService).sendProgressFeedback(packetNumber + 1, packetCount, firmwareCommand)
     }
 }
