@@ -10,7 +10,7 @@ mockk = "1.13.14"
 springmockk = "4.0.2"
 sonarqube = "6.0.1.5171"
 spotless = "6.25.0"
-spring-boot = "3.3.5"
+spring-boot = "3.4.1"
 
 [libraries]
 avro = { group = "org.apache.avro", name = "avro", version.ref = "avro" }
