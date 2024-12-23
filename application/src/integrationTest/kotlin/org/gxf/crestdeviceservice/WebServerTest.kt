@@ -73,7 +73,7 @@ class WebServerTest {
         val response = uploadFile(firmwareFile)
 
         // assert
-        assertThat(response.statusCode.value()).isEqualTo(302)
+        assertThat(response.statusCode.value()).isEqualTo(200)
         assertThat(firmwareRepository.findByName(NAME)).isNotNull
         assertThat(firmwarePacketRepository.findAll()).hasSize(NUMBER_OF_PACKETS)
 
