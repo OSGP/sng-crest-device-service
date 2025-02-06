@@ -26,16 +26,16 @@ class PayloadService(
      * - checking the payload for results for the commands sent via downlinks
      * - checking the payload for FMC (request for new FOTA packet)
      *
-     * @param identity The identity of the device
+     * @param deviceId The identity of the device
      * @param body The body of the device message
      * @param downlink The downlink to be returned to the device, fill it here if needed
      */
-    fun processPayload(identity: String, body: JsonNode, downlink: Downlink) {
-        commandResultService.handleMessage(identity, body)
+    fun processPayload(deviceId: String, body: JsonNode, downlink: Downlink) {
+        commandResultService.handleMessage(deviceId, body)
 
         val deviceMessage = DeviceMessage(body)
 
-        addFirmwareCommandIfRequested(deviceMessage, identity, downlink)?.let { firmware ->
+        addFirmwareCommandIfRequested(deviceMessage, deviceId, downlink)?.let { firmware ->
             sendProgress(deviceMessage, firmware)
         }
     }

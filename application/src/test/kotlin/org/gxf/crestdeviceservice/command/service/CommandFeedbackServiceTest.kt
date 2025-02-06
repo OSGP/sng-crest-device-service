@@ -12,6 +12,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.apache.avro.specific.SpecificRecordBase
 import org.assertj.core.api.Assertions.assertThat
+import org.gxf.crestdeviceservice.CommandFactory.analogAlarmThresholdsCommandInProgess
 import org.gxf.crestdeviceservice.CommandFactory.firmwareCommandInProgress
 import org.gxf.crestdeviceservice.TestConstants.DEVICE_ID
 import org.gxf.crestdeviceservice.config.KafkaProducerProperties
@@ -51,5 +52,35 @@ class CommandFeedbackServiceTest {
         assertThat(feedback.deviceId).isEqualTo(DEVICE_ID)
         assertThat(feedback.status).isEqualTo(CommandStatus.Progress)
         assertThat(feedback.message).isEqualTo("2/5")
+    }
+
+    @Test
+    fun `should send default success message`() {
+        service.sendSuccessFeedback(analogAlarmThresholdsCommandInProgess())
+
+        val feedbackSlot = slot<CommandFeedback>()
+
+        verify { kafkaTemplate.send(topic, DEVICE_ID, capture(feedbackSlot)) }
+
+        val feedback = feedbackSlot.captured
+        assertThat(feedback.deviceId).isEqualTo(DEVICE_ID)
+        assertThat(feedback.status).isEqualTo(CommandStatus.Successful)
+        assertThat(feedback.message).isEqualTo("Command handled successfully")
+    }
+
+    @Test
+    fun `should send generated success message`() {
+        val feedbackMessage = "feedback"
+
+        service.sendSuccessFeedback(analogAlarmThresholdsCommandInProgess(), feedbackMessage)
+
+        val feedbackSlot = slot<CommandFeedback>()
+
+        verify { kafkaTemplate.send(topic, DEVICE_ID, capture(feedbackSlot)) }
+
+        val feedback = feedbackSlot.captured
+        assertThat(feedback.deviceId).isEqualTo(DEVICE_ID)
+        assertThat(feedback.status).isEqualTo(CommandStatus.Successful)
+        assertThat(feedback.message).isEqualTo(feedbackMessage)
     }
 }

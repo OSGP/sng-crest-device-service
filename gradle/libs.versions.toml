@@ -17,6 +17,7 @@ avro = { group = "org.apache.avro", name = "avro", version.ref = "avro" }
 commonsCodec = { group = "commons-codec", name = "commons-codec", version.ref = "commonsCodec" }
 flyway = { group = "org.flywaydb", name = "flyway-database-postgresql" }
 h2 = { group = "com.h2database", name = "h2" }
+jacksonKotlinModule = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin" }
 junitJupiterApi = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
 junitJupiterEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine" }
 junitPlatformLauncher = { group = "org.junit.platform", name = "junit-platform-launcher" }

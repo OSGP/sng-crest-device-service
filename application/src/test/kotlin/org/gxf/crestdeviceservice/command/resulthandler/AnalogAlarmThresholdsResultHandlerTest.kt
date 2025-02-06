@@ -23,19 +23,20 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
 @ExtendWith(MockKExtension::class)
-class AnalogAlarmThresholdResultHandlerTest {
+class AnalogAlarmThresholdsResultHandlerTest {
     @MockK private lateinit var commandService: CommandService
     @MockK private lateinit var commandFeedbackService: CommandFeedbackService
 
-    @InjectMockKs private lateinit var resultHandler: AnalogAlarmThresholdResultHandler
+    @InjectMockKs private lateinit var resultHandler: AnalogAlarmThresholdsResultHandler
 
     @Test
     fun handleSuccess() {
         val command = CommandFactory.analogAlarmThresholdsCommandInProgess()
+        val message = MessageFactory.messageWithUrc(listOf("AL6:SET"), "")
         every { commandService.saveCommand(any()) } answers { firstArg() }
         justRun { commandFeedbackService.sendSuccessFeedback(any()) }
 
-        resultHandler.handleSuccess(command)
+        resultHandler.handleSuccess(command, message)
 
         assertThat(command.status).isEqualTo(Command.CommandStatus.SUCCESSFUL)
         verify { commandService.saveCommand(command) }
@@ -45,7 +46,7 @@ class AnalogAlarmThresholdResultHandlerTest {
     @Test
     fun handleFailure() {
         val command = CommandFactory.analogAlarmThresholdsCommandInProgess()
-        val message = MessageFactory.messageWithUrc(listOf("AL6:DLER"), "")
+        val message = MessageFactory.messageWithUrc(listOf("AL6:DLER"))
 
         every { commandService.saveCommand(any()) } answers { firstArg() }
         justRun { commandFeedbackService.sendErrorFeedback(any(), any()) }

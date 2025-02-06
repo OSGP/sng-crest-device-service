@@ -68,6 +68,21 @@ object CommandFactory {
     fun analogAlarmThresholdsCommandInProgess(value: String = ANALOG_ALARM_THRESHOLDS_MILLIBAR_PORT_3) =
         pendingAnalogAlarmThresholdsCommand(value = value).start()
 
+    fun infoAlarmsCommandInProgress(
+        timestampIssued: Instant = timestamp,
+        correlationId: UUID = CORRELATION_ID,
+        status: Command.CommandStatus = Command.CommandStatus.PENDING,
+    ) =
+        Command(
+            id = UUID.randomUUID(),
+            deviceId = DEVICE_ID,
+            correlationId = correlationId,
+            timestampIssued = timestampIssued,
+            type = Command.CommandType.INFO_ALARMS,
+            commandValue = null,
+            status = status,
+        )
+
     fun rebootCommandInProgress() = pendingRebootCommand().start()
 
     fun pskCommandInProgress() = pendingPskCommand().start()

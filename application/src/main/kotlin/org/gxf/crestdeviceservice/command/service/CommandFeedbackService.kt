@@ -50,8 +50,8 @@ class CommandFeedbackService(
         sendFeedback(commandFeedback)
     }
 
-    fun sendSuccessFeedback(command: Command) {
-        val commandFeedback = commandEntityToCommandFeedback(command, Successful, "Command handled successfully")
+    fun sendSuccessFeedback(command: Command, feedback: String = "Command handled successfully") {
+        val commandFeedback = commandEntityToCommandFeedback(command, Successful, feedback)
         sendFeedback(commandFeedback)
     }
 

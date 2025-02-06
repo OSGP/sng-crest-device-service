@@ -32,10 +32,11 @@ class FirmwareCommandResultHandlerTest {
     @Test
     fun handleSuccess() {
         val command = CommandFactory.firmwareCommandInProgress()
+        val message = MessageFactory.messageWithUrc(listOf("OTA:SUC"))
         every { commandService.saveCommand(any()) } answers { firstArg() }
         justRun { commandFeedbackService.sendSuccessFeedback(any()) }
 
-        firmwareCommandResultHandler.handleSuccess(command)
+        firmwareCommandResultHandler.handleSuccess(command, message)
 
         assertThat(command.status).isEqualTo(Command.CommandStatus.SUCCESSFUL)
         verify { commandService.saveCommand(command) }
@@ -45,7 +46,7 @@ class FirmwareCommandResultHandlerTest {
     @Test
     fun handleFailure() {
         val command = CommandFactory.firmwareCommandInProgress()
-        val message = MessageFactory.messageWithUrc(listOf("OTA:HSER"), "")
+        val message = MessageFactory.messageWithUrc(listOf("OTA:HSER"))
         every { commandService.saveCommand(any()) } answers { firstArg() }
         justRun { commandFeedbackService.sendErrorFeedback(any(), any()) }
 

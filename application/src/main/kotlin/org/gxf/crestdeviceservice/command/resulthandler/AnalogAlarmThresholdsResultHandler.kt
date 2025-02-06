@@ -11,7 +11,7 @@ import org.gxf.crestdeviceservice.command.service.CommandService
 import org.springframework.stereotype.Component
 
 @Component
-class AnalogAlarmThresholdResultHandler(
+class AnalogAlarmThresholdsResultHandler(
     val commandService: CommandService,
     val commandFeedbackService: CommandFeedbackService,
 ) : CommandResultHandler(commandService, commandFeedbackService) {
@@ -20,16 +20,16 @@ class AnalogAlarmThresholdResultHandler(
 
     override val supportedCommandType = Command.CommandType.ANALOG_ALARM_THRESHOLDS
 
-    override fun hasSucceeded(command: Command, body: JsonNode): Boolean {
+    override fun hasSucceeded(command: Command, message: JsonNode): Boolean {
         val channel = getChannelFromCommand(command)
         val fullSuccesUrc = "$channel:$partialSuccessUrc"
-        return fullSuccesUrc in body.urcs()
+        return fullSuccesUrc in message.urcs()
     }
 
-    override fun hasFailed(command: Command, body: JsonNode): Boolean {
+    override fun hasFailed(command: Command, message: JsonNode): Boolean {
         val channel = getChannelFromCommand(command)
         val fullErrorUrcs = partialErrorUrcs.map { "$channel:$it" }
-        return body.urcs().any { it in fullErrorUrcs }
+        return message.urcs().any { it in fullErrorUrcs }
     }
 
     private fun getChannelFromCommand(command: Command): String {

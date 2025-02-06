@@ -22,7 +22,7 @@ object MessageFactory {
         return mapper.readTree(messageFile) as ObjectNode
     }
 
-    fun messageWithUrc(urcs: List<String>, downlink: String): JsonNode {
+    fun messageWithUrc(urcs: List<String>, downlink: String = ""): JsonNode {
         val urcNodes = urcs.map { urc -> TextNode(urc) }
         val downlinkNode = ObjectNode(JsonNodeFactory.instance, mapOf(DL_FIELD to TextNode(downlink)))
 

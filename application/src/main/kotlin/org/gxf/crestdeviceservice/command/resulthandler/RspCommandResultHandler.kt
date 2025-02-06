@@ -19,7 +19,7 @@ class RspCommandResultHandler(commandService: CommandService, commandFeedbackSer
 
     override val supportedCommandType = CommandType.RSP
 
-    override fun hasSucceeded(command: Command, body: JsonNode) = successUrc in body.urcs()
+    override fun hasSucceeded(command: Command, message: JsonNode) = successUrc in message.urcs()
 
-    override fun hasFailed(command: Command, body: JsonNode) = errorUrc in body.urcs()
+    override fun hasFailed(command: Command, message: JsonNode) = errorUrc in message.urcs()
 }

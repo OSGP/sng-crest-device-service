@@ -32,10 +32,11 @@ class RebootCommandResultHandlerTest {
     @Test
     fun handleSuccess() {
         val command = CommandFactory.rebootCommandInProgress()
+        val message = MessageFactory.messageWithUrc(listOf("INIT"))
         every { commandService.saveCommand(any()) } answers { firstArg() }
         justRun { commandFeedbackService.sendSuccessFeedback(any()) }
 
-        rebootCommandResultHandler.handleSuccess(command)
+        rebootCommandResultHandler.handleSuccess(command, message)
 
         assertThat(command.status).isEqualTo(Command.CommandStatus.SUCCESSFUL)
         verify { commandService.saveCommand(command) }

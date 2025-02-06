@@ -26,16 +26,16 @@ class PskSetCommandResultHandler(
 
     override val supportedCommandType = CommandType.PSK_SET
 
-    override fun hasSucceeded(command: Command, body: JsonNode) = successUrc in body.urcs()
+    override fun hasSucceeded(command: Command, message: JsonNode) = successUrc in message.urcs()
 
-    override fun hasFailed(command: Command, body: JsonNode) = body.urcs().any { it in errorUrcs }
+    override fun hasFailed(command: Command, message: JsonNode) = message.urcs().any { it in errorUrcs }
 
-    override fun handleCommandSpecificSuccess(command: Command) {
+    override fun handleCommandSpecificSuccess(command: Command, message: JsonNode) {
         logger.info { "PSK SET command succeeded: Changing active key for device ${command.deviceId}" }
         pskService.changeActiveKey(command.deviceId)
     }
 
-    override fun handleCommandSpecificFailure(command: Command, body: JsonNode) {
+    override fun handleCommandSpecificFailure(command: Command, message: JsonNode) {
         logger.info { "PSK SET command failed: Setting pending key as invalid for device ${command.deviceId}" }
         pskService.setPendingKeyAsInvalid(command.deviceId)
     }

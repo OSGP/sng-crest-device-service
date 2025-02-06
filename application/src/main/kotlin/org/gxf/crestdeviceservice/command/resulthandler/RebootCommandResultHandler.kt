@@ -18,7 +18,7 @@ class RebootCommandResultHandler(commandService: CommandService, commandFeedback
 
     override val supportedCommandType = CommandType.REBOOT
 
-    override fun hasSucceeded(command: Command, body: JsonNode) = successUrc in body.urcs()
+    override fun hasSucceeded(command: Command, message: JsonNode) = successUrc in message.urcs()
 
-    override fun hasFailed(command: Command, body: JsonNode) = false
+    override fun hasFailed(command: Command, message: JsonNode) = false
 }

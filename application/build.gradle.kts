@@ -29,6 +29,8 @@ dependencies {
 
     implementation(libs.commonsCodec)
 
+    implementation(libs.jacksonKotlinModule)
+
     runtimeOnly(libs.micrometerPrometheusModule)
     runtimeOnly(libs.postgresql)
     runtimeOnly(libs.flyway)

@@ -19,7 +19,7 @@ class PskCommandResultHandler(commandService: CommandService, commandFeedbackSer
 
     override val supportedCommandType = CommandType.PSK
 
-    override fun hasSucceeded(command: Command, body: JsonNode) = successUrc in body.urcs()
+    override fun hasSucceeded(command: Command, message: JsonNode) = successUrc in message.urcs()
 
-    override fun hasFailed(command: Command, body: JsonNode) = body.urcs().any { it in errorUrcs }
+    override fun hasFailed(command: Command, message: JsonNode) = message.urcs().any { it in errorUrcs }
 }
