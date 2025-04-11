@@ -23,7 +23,8 @@ class FirmwarePacket(
 
     companion object {
         const val OTA_START = "OTA0000"
+        const val OTA_COMMAND_LENGTH = OTA_START.length
         const val OTA_DONE = ":DONE"
-        const val HASH_LENGTH = 40
+        const val HASH_LENGTH_BYTES = 32
     }
 }

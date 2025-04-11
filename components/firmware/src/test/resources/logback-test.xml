@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2025 Alliander N.V. -->
+
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.gxf" level="DEBUG" />
+
+    <root level="WARN" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
