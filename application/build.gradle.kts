@@ -14,8 +14,8 @@ dependencies {
     implementation(libs.springBootStarterWeb)
     implementation(libs.springBootStarterDataJpa)
     implementation(libs.springBootStarterThymeleaf)
-    implementation(libs.springSecurityCore)
     implementation(libs.springKafka)
+    implementation(libs.bundles.springSecurity)
 
     implementation(project(":components:avro"))
     implementation(project(":components:device"))

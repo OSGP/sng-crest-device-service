@@ -11,13 +11,14 @@ import org.gxf.crestdeviceservice.psk.service.PskService
 import org.gxf.crestdeviceservice.service.MetricService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@WebMvcTest(PskController::class)
+@WebMvcTest(PskController::class, excludeAutoConfiguration = [SecurityAutoConfiguration::class])
 class PskControllerTest {
     @MockkBean private lateinit var pskService: PskService
 

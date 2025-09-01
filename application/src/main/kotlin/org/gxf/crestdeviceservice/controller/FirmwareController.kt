@@ -24,34 +24,19 @@ class FirmwareController(val firmwareService: FirmwareService, val firmwareProdu
     @GetMapping fun showUploadForm() = "firmwareUploadForm"
 
     @PostMapping
-    fun handleFileUpload(@RequestPart("file") file: MultipartFile, redirectAttributes: RedirectAttributes): String {
-        if (file.originalFilename.isNullOrEmpty()) {
-            redirectAttributes.setMessage("No file provided")
-            return redirectUrl
+    fun handleFileUpload(@RequestPart("file") file: MultipartFile, redirectAttributes: RedirectAttributes): String =
+        WebControllerHelper.runAfterFileChecks(file, redirectAttributes, redirectUrl) {
+            try {
+                logger.info { "Processing firmware file with name: ${file.originalFilename}" }
+
+                val savedFirmware = firmwareService.processFirmware(file)
+                firmwareProducerService.sendAllFirmwares()
+
+                logger.info { "Firmware file successfully processed" }
+                redirectAttributes.setMessage("Successfully processed ${savedFirmware.packets.size} firmware packets")
+            } catch (exception: FirmwareException) {
+                logger.error(exception) { "Failed to process firmware file" }
+                redirectAttributes.setMessage("Failed to process file: ${exception.message}")
+            }
         }
-
-        redirectAttributes.addFlashAttribute("filename", file.originalFilename)
-
-        if (file.isEmpty) {
-            redirectAttributes.setMessage("An empty file was provided")
-            return redirectUrl
-        }
-        try {
-            logger.info { "Processing firmware file with name: ${file.originalFilename}" }
-
-            val savedFirmware = firmwareService.processFirmware(file)
-            firmwareProducerService.sendAllFirmwares()
-
-            logger.info { "Firmware file successfully processed" }
-            redirectAttributes.setMessage("Successfully processed ${savedFirmware.packets.size} firmware packets")
-        } catch (exception: FirmwareException) {
-            logger.error(exception) { "Failed to process firmware file" }
-            redirectAttributes.setMessage("Failed to process file: ${exception.message}")
-        }
-        return redirectUrl
-    }
-
-    private fun RedirectAttributes.setMessage(message: String) {
-        this.addFlashAttribute("message", message)
-    }
 }

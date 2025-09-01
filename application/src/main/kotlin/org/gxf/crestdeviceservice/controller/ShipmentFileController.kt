@@ -24,38 +24,23 @@ class ShipmentFileController(private val shipmentFileService: ShipmentFileServic
     @GetMapping fun showUploadForm() = "shipmentFileUploadForm"
 
     @PostMapping
-    fun handleFileUpload(@RequestPart("file") file: MultipartFile, redirectAttributes: RedirectAttributes): String {
-        if (file.originalFilename.isNullOrEmpty()) {
-            redirectAttributes.setMessage("No file provided")
-            return redirectUrl
-        }
+    fun handleFileUpload(@RequestPart("file") file: MultipartFile, redirectAttributes: RedirectAttributes): String =
+        WebControllerHelper.runAfterFileChecks(file, redirectAttributes, redirectUrl) {
+            try {
+                logger.info { "Processing shipment file with name: ${file.originalFilename}" }
 
-        redirectAttributes.addFlashAttribute("filename", file.originalFilename)
+                val processedDevices = shipmentFileService.processShipmentFile(file)
 
-        if (file.isEmpty) {
-            redirectAttributes.setMessage("An empty file was provided")
-            return redirectUrl
-        }
-        try {
-            logger.info { "Processing shipment file with name: ${file.originalFilename}" }
-
-            val processedDevices = shipmentFileService.processShipmentFile(file)
-
-            logger.info { "Shipment file successfully processed" }
-            redirectAttributes.setMessage("Successfully processed $processedDevices devices")
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to process firmware file" }
-            when (e) {
-                is JsonParseException,
-                is JsonMappingException,
-                    -> redirectAttributes.setMessage("Failed to parse file as JSON")
-                else -> redirectAttributes.setMessage("Failed to process file")
+                logger.info { "Shipment file successfully processed" }
+                redirectAttributes.setMessage("Successfully processed $processedDevices devices")
+            } catch (e: Exception) {
+                logger.error(e) { "Failed to process firmware file" }
+                when (e) {
+                    is JsonParseException,
+                    is JsonMappingException,
+                        -> redirectAttributes.setMessage("Failed to parse file as JSON")
+                    else -> redirectAttributes.setMessage("Failed to process file")
+                }
             }
         }
-        return redirectUrl
-    }
-
-    private fun RedirectAttributes.setMessage(message: String) {
-        this.addFlashAttribute("message", message)
-    }
 }

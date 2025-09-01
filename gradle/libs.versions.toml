@@ -33,17 +33,24 @@ postgresql = { group = "org.postgresql", name = "postgresql" }
 springmockk = { group = "com.ninja-squad", name = "springmockk", version.ref = "springmockk" }
 springBootDependencies = { group = "org.springframework.boot", name = "spring-boot-dependencies", version.ref = "spring-boot" }
 springBootStarterActuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
+springBootStarterSecurity = { group = "org.springframework.boot", name = "spring-boot-starter-security" }
+springBootStarterSecurityTest = { group = "org.springframework.boot", name = "spring-boot-starter-security-test" }
 springBootStarterTest = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
 springBootStarterThymeleaf = { group = "org.springframework.boot", name = "spring-boot-starter-thymeleaf" }
 springBootStarterWeb = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
 springBootStarterDataJpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa" }
 springSecurityCore = { group = "org.springframework.security", name = "spring-security-core" }
+springSecurityConfig = { group = "org.springframework.security", name = "spring-security-config" }
+springSecurityLdap = { group = "org.springframework.security", name = "spring-security-ldap" }
+springSecurityWeb = { group = "org.springframework.security", name = "spring-security-web" }
 springKafka = { group = "org.springframework.kafka", name = "spring-kafka" }
 springKafkaTest = { group = "org.springframework.kafka", name = "spring-kafka-test" }
 springWsTest = { group = "org.springframework.ws", name = "spring-ws-test" }
 
 [bundles]
 gxfUtils = ["kafkaAvro", "kafkaAzureOAuth"]
+#springSecurity = ["springSecurityCore", "springSecurityConfig", "springSecurityLdap", "springSecurityWeb"]
+springSecurity = ["springBootStarterSecurity", "springSecurityCore", "springSecurityConfig", "springSecurityWeb"]
 
 [plugins]
 avro = { id = "com.github.davidmc24.gradle.plugin.avro", version.ref = "avro-plugin" }

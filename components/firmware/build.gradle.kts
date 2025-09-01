@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
     implementation(libs.springBootStarterDataJpa)
-    implementation(libs.springSecurityCore)
     implementation(libs.springKafka)
     implementation(libs.springBootStarterWeb)
 
